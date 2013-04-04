@@ -60,8 +60,8 @@ func NewMongoAuthServer(db *mgo.Database) (AuthServer, error) {
 }
 
 type mongoServer struct {
-	db                 *mgo.Database
-	name               string // Collection name
+	db          *mgo.Database
+	name        string // Collection name
 	expireAfter *time.Duration
 }
 

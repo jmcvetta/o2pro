@@ -3,13 +3,13 @@
 package btoken
 
 import (
-	"labix.org/v2/mgo"
 	"github.com/bmizerany/assert"
+	"labix.org/v2/mgo"
 	"testing"
 )
 
 var (
-	testAS AuthServer
+	testAS    AuthServer
 	testMongo *mgo.Database
 )
 
@@ -19,11 +19,11 @@ func col() *mgo.Collection {
 
 func setup(t *testing.T) {
 	/*
-	if testAS != nil {
-		t.Log("Using existing testAuthServer\n")
-		return
-	}
-	t.Log("Initializing testAuthServer\n")
+		if testAS != nil {
+			t.Log("Using existing testAuthServer\n")
+			return
+		}
+		t.Log("Initializing testAuthServer\n")
 	*/
 	session, err := mgo.Dial("localhost")
 	if err != nil {
@@ -43,21 +43,43 @@ func setup(t *testing.T) {
 
 func TestIssueToken(t *testing.T) {
 	setup(t)
+	user := "jtkirk"
+	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
-		User:   "jtkirk",
-		Scopes: []string{"enterprise", "shuttlecraft"},
+		User:   user,
+		Scopes: scopes,
 	}
 	token, err := testAS.IssueToken(req)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Logf("Token: %v\n", token)
 	c := col()
 	cnt, err := c.Count()
 	if err != nil {
 		t.Error(err)
 	}
 	assert.Equal(t, 1, cnt)
+	query := struct {
+		Token string
+	}{
+		Token: token,
+	}
+	q := c.Find(query)
+	cnt, err = q.Count()
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, 1, cnt)
+	a := Authorization{}
+	err = q.One(&a)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, user, a.User)
+	for _, scope := range scopes {
+		_, ok := a.Scopes[scope]
+		assert.T(t, ok, "Expected scope: ", scope)
+	}
 }
 
 func TestFoobar(t *testing.T) {
