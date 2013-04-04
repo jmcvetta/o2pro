@@ -30,15 +30,15 @@ var (
 
 // An AuthServer can issue Oauth2-style bearer tokens
 type AuthServer interface {
-	ExpireAfter(duration string) (*time.Duration, error) // Expire all authorizations after duration
+	ExpireAfter(duration string) (time.Duration, error) // Expire all authorizations after duration
 	IssueToken(req AuthRequest) (string, error)
 	GetAuthorization(token string) (Authorization, error)
 }
 
 type AuthRequest struct {
-	User       string
-	Scopes     []string
-	Expiration time.Time
+	User     string
+	Scopes   []string
+	Duration time.Duration
 }
 
 type Authorization struct {
@@ -62,7 +62,7 @@ func NewMongoAuthServer(db *mgo.Database) (AuthServer, error) {
 type mongoServer struct {
 	db          *mgo.Database
 	name        string // Collection name
-	expireAfter *time.Duration
+	expireAfter time.Duration
 }
 
 func (m *mongoServer) ensureIndexes() error {
@@ -98,16 +98,17 @@ func (s *mongoServer) col() *mgo.Collection {
 	return d.C(s.name)
 }
 
-func (s *mongoServer) ExpireAfter(duration string) (*time.Duration, error) {
+func (s *mongoServer) ExpireAfter(duration string) (time.Duration, error) {
 	if duration == "" {
 		return s.expireAfter, nil
 	}
 	dur, err := time.ParseDuration("8h")
-	if err == nil {
-		s.expireAfter = &dur
+	if err != nil {
+		return dur, err
 	}
+	s.expireAfter = dur
 	err = s.ensureIndexes()
-	return &dur, err
+	return dur, err
 
 }
 
@@ -115,6 +116,11 @@ func (s *mongoServer) IssueToken(req AuthRequest) (string, error) {
 	c := s.col()
 	tok := uuid.NewUUID().String()
 	scopes := map[string]bool{}
+	dur := req.Duration
+	if dur.Seconds() == 0 || dur.Nanoseconds() > s.expireAfter.Nanoseconds() {
+		dur = s.expireAfter
+	}
+	exp := time.Now().Add(dur)
 	for _, s := range req.Scopes {
 		scopes[s] = true
 	}
@@ -122,7 +128,7 @@ func (s *mongoServer) IssueToken(req AuthRequest) (string, error) {
 		Token:      tok,
 		User:       req.User,
 		Scopes:     scopes,
-		Expiration: req.Expiration,
+		Expiration: exp,
 	}
 	err := c.Insert(a)
 	return tok, err

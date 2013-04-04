@@ -9,6 +9,7 @@ import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
 	"testing"
+	"log"
 )
 
 var (
@@ -28,6 +29,7 @@ func setup(t *testing.T) {
 		}
 		t.Log("Initializing testAuthServer\n")
 	*/
+	log.SetFlags(log.Ltime | log.Lshortfile)
 	session, err := mgo.Dial("localhost")
 	if err != nil {
 		t.Fatal(err)
@@ -85,7 +87,25 @@ func TestIssueToken(t *testing.T) {
 	}
 }
 
-func TestFoobar(t *testing.T) {
+func TestGetAuthorization(t *testing.T) {
 	setup(t)
-
+	user := "jtkirk"
+	scopes := []string{"enterprise", "shuttlecraft"}
+	req := AuthRequest{
+		User:   user,
+		Scopes: scopes,
+	}
+	token, err := testAS.IssueToken(req)
+	if err != nil {
+		t.Error(err)
+	}
+	a, err := testAS.GetAuthorization(token)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, user, a.User)
+	for _, scope := range scopes {
+		_, ok := a.Scopes[scope]
+		assert.T(t, ok, "Expected scope: ", scope)
+	}
 }
