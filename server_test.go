@@ -7,12 +7,12 @@ package btoken
 import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
-	"testing"
 	"log"
+	"testing"
 )
 
 var (
-	testAS    AuthServer
+	testServ  Server
 	testMongo *mgo.Database
 )
 
@@ -22,7 +22,7 @@ func col() *mgo.Collection {
 
 func setup(t *testing.T) {
 	/*
-		if testAS != nil {
+		if testServ != nil {
 			t.Log("Using existing testAuthServer\n")
 			return
 		}
@@ -38,7 +38,7 @@ func setup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	testAS, err = NewMongoAuthServer(testMongo)
+	testServ, err = NewMongoServer(testMongo)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +53,7 @@ func TestIssueToken(t *testing.T) {
 		User:   user,
 		Scopes: scopes,
 	}
-	token, err := testAS.IssueToken(req)
+	token, err := testServ.IssueToken(req)
 	if err != nil {
 		t.Error(err)
 	}
@@ -94,11 +94,11 @@ func TestGetAuthorization(t *testing.T) {
 		User:   user,
 		Scopes: scopes,
 	}
-	token, err := testAS.IssueToken(req)
+	token, err := testServ.IssueToken(req)
 	if err != nil {
 		t.Error(err)
 	}
-	a, err := testAS.GetAuthorization(token)
+	a, err := testServ.GetAuthorization(token)
 	if err != nil {
 		t.Error(err)
 	}

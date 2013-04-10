@@ -12,10 +12,10 @@ const (
 	DefaultExpireAfter = "8h" // Duration string for time.ParseDuration()
 )
 
-// An AuthServer can issue Oauth2-style bearer tokens
-type AuthServer interface {
+// A Server is an authorization service that can issue Oauth2-style bearer
+// tokens.
+type Server interface {
 	ExpireAfter(duration string) (time.Duration, error) // Expire all authorizations after duration
 	IssueToken(req AuthRequest) (string, error)
 	GetAuthorization(token string) (Authorization, error)
 }
-

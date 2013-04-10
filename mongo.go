@@ -12,7 +12,7 @@ import (
 
 // NewMongoAuthServer configures a MongoDB-based AuthServer.  If expireAfter is
 // not nil, authorizations will be automatically expired.
-func NewMongoAuthServer(db *mgo.Database) (AuthServer, error) {
+func NewMongoServer(db *mgo.Database) (Server, error) {
 	m := mongoServer{
 		db:   db,
 		name: "authorizations",
