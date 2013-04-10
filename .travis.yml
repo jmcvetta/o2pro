@@ -1,6 +1,6 @@
 language: go
-resources: 
-- mongodb
+services: 
+  - mongodb
 notificaitons:
   email:
     recipients: jason.mcvetta@gmail.com
@@ -8,5 +8,3 @@ notificaitons:
     on_failure: always
 before_script:
 - go get github.com/bmizerany/assert
-after_failure: ps ax | grep mongo
-
