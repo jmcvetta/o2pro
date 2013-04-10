@@ -29,7 +29,7 @@ func setup(t *testing.T) {
 		t.Log("Initializing testAuthServer\n")
 	*/
 	log.SetFlags(log.Ltime | log.Lshortfile)
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial("127.0.0.1")
 	if err != nil {
 		t.Fatal(err)
 	}
