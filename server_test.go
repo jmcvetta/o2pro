@@ -7,20 +7,24 @@ package btoken
 import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
+	"net/url"
 	"testing"
 )
 
 var (
-	testMongo         *mgo.Database
 	testScopesAll     = []string{"enterprise", "shuttlecraft", "intrepid"}
 	testScopesDefault = []string{"shuttlecraft"}
 )
 
-func col() *mgo.Collection {
-	return testMongo.C("authorizations")
+func FakeAuthenticator(u url.Userinfo) (bool, error) {
+	return true, nil
 }
 
-func setup(t *testing.T) *Server {
+func col(db *mgo.Database) *mgo.Collection {
+	return db.C("authorizations")
+}
+
+func setup(t *testing.T) (*Server, *mgo.Database) {
 	/*
 		if testServ != nil {
 			t.Log("Using existing testAuthServer\n")
@@ -32,22 +36,22 @@ func setup(t *testing.T) *Server {
 	if err != nil {
 		t.Fatal(err)
 	}
-	testMongo = session.DB("test_btoken")
-	err = testMongo.DropDatabase()
+	db := session.DB("test_btoken")
+	err = db.DropDatabase()
 	if err != nil {
 		t.Fatal(err)
 	}
-	s, err := NewMongoServer(testMongo, DefaultExpireAfter)
+	s, err := NewMongoServer(db, DefaultExpireAfter)
 	if err != nil {
 		t.Fatal(err)
 	}
 	s.Scopes = testScopesAll
 	s.DefaultScopes = testScopesDefault
-	return s
+	return s, db
 }
 
 func TestNewAuth(t *testing.T) {
-	s := setup(t)
+	s, db := setup(t)
 	owner := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
@@ -58,7 +62,7 @@ func TestNewAuth(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	c := col()
+	c := col(db)
 	cnt, err := c.Count()
 	if err != nil {
 		t.Error(err)
@@ -88,7 +92,7 @@ func TestNewAuth(t *testing.T) {
 }
 
 func TestGetAuthorization(t *testing.T) {
-	s := setup(t)
+	s, _ := setup(t)
 	owner := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
