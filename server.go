@@ -38,7 +38,7 @@ type Server struct {
 	DefaultScopes []string      // Issued if no specific scope(s) requested
 	MaxDuration   time.Duration // Max lifetime for an authorization
 	Logger        *log.Logger
-	Authorizer     Authorizer
+	Authorizer    Authorizer
 }
 
 // NewAuth issues a new Authorization based on an AuthRequest.
@@ -58,7 +58,7 @@ func (s *Server) NewAuth(owner string, req AuthRequest) (Authorization, error) {
 		Owner:      owner,
 		Scopes:     scopes,
 		Expiration: exp,
-		Note: req.Note,
+		Note:       req.Note,
 	}
 	err := s.SaveAuth(a)
 	return a, err

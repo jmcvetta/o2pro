@@ -6,12 +6,12 @@ package btoken
 
 import (
 	"encoding/base64"
+	"encoding/json"
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
-	"encoding/json"
-	"log"
 )
 
 var (
@@ -57,12 +57,12 @@ func (s *Server) HandleAuthRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	a, err := s.Authorize(u, areq)
 	switch {
-		case err == ErrUnauthorized:
-			http.Error(w, malformed, http.StatusUnauthorized)
-			return
-		case err != nil:
-			log.Println(err)
-			http.Error(w, malformed, http.StatusBadRequest)
+	case err == ErrUnauthorized:
+		http.Error(w, malformed, http.StatusUnauthorized)
+		return
+	case err != nil:
+		log.Println(err)
+		http.Error(w, malformed, http.StatusBadRequest)
 	}
 	//
 	// Authorization Granted
