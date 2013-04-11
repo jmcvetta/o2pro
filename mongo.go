@@ -5,29 +5,40 @@
 package btoken
 
 import (
-	"code.google.com/p/go-uuid/uuid"
 	"labix.org/v2/mgo"
 	"time"
 )
 
 // NewMongoAuthServer configures a MongoDB-based AuthServer.  If expireAfter is
 // not nil, authorizations will be automatically expired.
-func NewMongoServer(db *mgo.Database) (Server, error) {
-	m := mongoServer{
-		db:   db,
-		name: "authorizations",
+func NewMongoServer(db *mgo.Database, duration string) (*Server, error) {
+	dur, err := time.ParseDuration(duration)
+	if err != nil {
+		return nil, err
 	}
-	_, err := m.ExpireAfter(DefaultExpireAfter)
-	return &m, err
+	stor := mongoStorage{
+		db:          db,
+		name:        "authorizations",
+		expireAfter: dur,
+	}
+	serv := Server{
+		Storage:       &stor,
+		MaxDuration:   dur,
+		Logger:        DefaultLogger,
+		Scopes:        DefaultScopes,
+		DefaultScopes: DefaultScopes,
+	}
+	err = serv.Activate()
+	return &serv, err
 }
 
-type mongoServer struct {
+type mongoStorage struct {
 	db          *mgo.Database
 	name        string // Collection name
 	expireAfter time.Duration
 }
 
-func (m *mongoServer) ensureIndexes() error {
+func (m *mongoStorage) Activate() error {
 	//
 	// Declare Indexes
 	//
@@ -53,50 +64,7 @@ func (m *mongoServer) ensureIndexes() error {
 	return nil
 }
 
-// col returns a Collection object in a new mgo session
-func (s *mongoServer) col() *mgo.Collection {
-	session := s.db.Session.Copy()
-	d := session.DB(s.db.Name)
-	return d.C(s.name)
-}
-
-func (s *mongoServer) ExpireAfter(duration string) (time.Duration, error) {
-	if duration == "" {
-		return s.expireAfter, nil
-	}
-	dur, err := time.ParseDuration("8h")
-	if err != nil {
-		return dur, err
-	}
-	s.expireAfter = dur
-	err = s.ensureIndexes()
-	return dur, err
-
-}
-
-func (s *mongoServer) IssueToken(req AuthRequest) (string, error) {
-	c := s.col()
-	tok := uuid.NewUUID().String()
-	scopes := map[string]bool{}
-	dur := req.Duration
-	if dur.Seconds() == 0 || dur.Nanoseconds() > s.expireAfter.Nanoseconds() {
-		dur = s.expireAfter
-	}
-	exp := time.Now().Add(dur)
-	for _, s := range req.Scopes {
-		scopes[s] = true
-	}
-	a := Authorization{
-		Token:      tok,
-		User:       req.User,
-		Scopes:     scopes,
-		Expiration: exp,
-	}
-	err := c.Insert(a)
-	return tok, err
-}
-
-func (s *mongoServer) GetAuthorization(token string) (Authorization, error) {
+func (s *mongoStorage) GetAuth(token string) (Authorization, error) {
 	a := Authorization{}
 	c := s.col()
 	query := struct {
@@ -123,22 +91,13 @@ func (s *mongoServer) GetAuthorization(token string) (Authorization, error) {
 	return a, nil
 }
 
-// CheckAuth answers whether the holder of a token is a given user who is
-// authorized to access a given scope.  If scope is an empty string, scope is
-// not checked.
-func (s *mongoServer) CheckAuth(token, user, scope string) (bool, error) {
-	a, err := s.GetAuthorization(token)
-	if err != nil {
-		return false, err
-	}
-	if a.User != user {
-		return false, nil
-	}
-	if scope != "" {
-		_, ok := a.Scopes[scope]
-		if !ok {
-			return false, nil
-		}
-	}
-	return true, nil
+func (s *mongoStorage) SaveAuth(auth Authorization) error {
+	return s.col().Insert(auth)
+}
+
+// col returns a Collection object in a new mgo session
+func (s *mongoStorage) col() *mgo.Collection {
+	session := s.db.Session.Copy()
+	d := session.DB(s.db.Name)
+	return d.C(s.name)
 }

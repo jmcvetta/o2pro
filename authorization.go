@@ -9,14 +9,17 @@ import (
 )
 
 type AuthRequest struct {
-	User     string
-	Scopes   []string
+	Owner    string        // "Resource Owner" per http://tools.ietf.org/html/rfc6749#section-1.1
+	Scopes   []string      // http://tools.ietf.org/html/rfc6749#section-3.3
 	Duration time.Duration // Max duration is AuthServer.ExpireAfter
+	Note     string        // Optional
 }
 
 type Authorization struct {
+	AuthId     string // Unique storage-dependent ID for this Authorization
 	Token      string
-	User       string
+	Owner      string
 	Scopes     map[string]bool // Map for easy lookup; always true
 	Expiration time.Time
+	Note       string
 }

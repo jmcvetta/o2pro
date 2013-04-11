@@ -7,20 +7,20 @@ package btoken
 import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
-	"log"
 	"testing"
 )
 
 var (
-	testServ  Server
-	testMongo *mgo.Database
+	testMongo         *mgo.Database
+	testScopesAll     = []string{"enterprise", "shuttlecraft", "intrepid"}
+	testScopesDefault = []string{"shuttlecraft"}
 )
 
 func col() *mgo.Collection {
 	return testMongo.C("authorizations")
 }
 
-func setup(t *testing.T) {
+func setup(t *testing.T) *Server {
 	/*
 		if testServ != nil {
 			t.Log("Using existing testAuthServer\n")
@@ -28,7 +28,6 @@ func setup(t *testing.T) {
 		}
 		t.Log("Initializing testAuthServer\n")
 	*/
-	log.SetFlags(log.Ltime | log.Lshortfile)
 	session, err := mgo.Dial("mongodb://127.0.0.1")
 	if err != nil {
 		t.Fatal(err)
@@ -38,22 +37,24 @@ func setup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	testServ, err = NewMongoServer(testMongo)
+	s, err := NewMongoServer(testMongo, DefaultExpireAfter)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return
+	s.Scopes = testScopesAll
+	s.DefaultScopes = testScopesDefault
+	return s
 }
 
-func TestIssueToken(t *testing.T) {
-	setup(t)
-	user := "jtkirk"
+func TestNewAuth(t *testing.T) {
+	s := setup(t)
+	owner := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
-		User:   user,
+		Owner:  owner,
 		Scopes: scopes,
 	}
-	token, err := testServ.IssueToken(req)
+	auth, err := s.NewAuth(req)
 	if err != nil {
 		t.Error(err)
 	}
@@ -66,7 +67,7 @@ func TestIssueToken(t *testing.T) {
 	query := struct {
 		Token string
 	}{
-		Token: token,
+		Token: auth.Token,
 	}
 	q := c.Find(query)
 	cnt, err = q.Count()
@@ -79,7 +80,7 @@ func TestIssueToken(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, user, a.User)
+	assert.Equal(t, owner, a.Owner)
 	for _, scope := range scopes {
 		_, ok := a.Scopes[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
@@ -87,22 +88,22 @@ func TestIssueToken(t *testing.T) {
 }
 
 func TestGetAuthorization(t *testing.T) {
-	setup(t)
-	user := "jtkirk"
+	s := setup(t)
+	owner := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
-		User:   user,
+		Owner:  owner,
 		Scopes: scopes,
 	}
-	token, err := testServ.IssueToken(req)
+	auth, err := s.NewAuth(req)
 	if err != nil {
 		t.Error(err)
 	}
-	a, err := testServ.GetAuthorization(token)
+	a, err := s.GetAuth(auth.Token)
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, user, a.User)
+	assert.Equal(t, owner, a.Owner)
 	for _, scope := range scopes {
 		_, ok := a.Scopes[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
