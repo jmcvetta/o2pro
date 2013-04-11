@@ -7,6 +7,7 @@ package btoken
 import (
 	"code.google.com/p/go-uuid/uuid"
 	"log"
+	"net/url"
 	"os"
 	"time"
 )
@@ -33,6 +34,7 @@ type Server struct {
 	DefaultScopes []string      // Issued if no specific scope(s) requested
 	MaxDuration   time.Duration // Max lifetime for an authorization
 	Logger        *log.Logger
+	Authenticator func(url.Userinfo) (bool, error)
 }
 
 // NewAuth issues a new Authorization based on an AuthRequest.
