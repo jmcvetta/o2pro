@@ -1,7 +1,12 @@
 btoken
 ======
 
-An attempt at OAuth2-style bearer token authentication in Go.
+OAuth2-style bearer token authentication in Go.
+
+`btoken` is not a full OAuth2 provider.  Rather it attempts to implement a subset of the OAuth2 specification:
+
+ * http://tools.ietf.org/html/rfc6749#section-4.3
+ * https://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-16
 
 
 # Documentation
