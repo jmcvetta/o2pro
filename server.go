@@ -35,6 +35,7 @@ type Server struct {
 	Logger        *log.Logger
 }
 
+// NewAuth issues a new Authorization based on an AuthRequest.
 func (s *Server) NewAuth(req AuthRequest) (Authorization, error) {
 	tok := uuid.NewUUID().String()
 	scopes := map[string]bool{}

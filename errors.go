@@ -8,6 +8,7 @@ import (
 	"errors"
 )
 
+// Standard Oauth2 error types
 // https://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-16#section-3.1
 var (
 	// HTTP 400
