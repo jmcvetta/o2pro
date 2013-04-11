@@ -17,7 +17,7 @@ documentation.
 
 ## Status
 
-Not yet ready.
+Under development - not yet ready for use.
 
 [![Build Status](https://travis-ci.org/jmcvetta/btoken.png)](https://travis-ci.org/jmcvetta/btoken)
 
