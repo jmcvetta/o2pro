@@ -4,6 +4,12 @@ btoken
 An attempt at OAuth2-style bearer token authentication in Go.
 
 
+# Documentation
+
+See [GoDoc](http://godoc.org/github.com/jmcvetta/btoken) for automatic
+documentation.
+
+
 ## Status
 
 Not yet ready.
