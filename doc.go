@@ -3,7 +3,7 @@
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
 /*
-Package `btoken` implements Oauth2-style bearer tokens, issued via resourse owner
+Package btoken implements Oauth2-style bearer tokens, issued via resourse owner
 password credential grant.
 
 http://tools.ietf.org/html/rfc6749#section-4.3
