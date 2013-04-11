@@ -10,7 +10,6 @@ import (
 
 // An AuthRequest describes the details of an Authorization to be issued.
 type AuthRequest struct {
-	Owner    string        // "Resource Owner" per http://tools.ietf.org/html/rfc6749#section-1.1
 	Scopes   []string      // http://tools.ietf.org/html/rfc6749#section-3.3
 	Duration time.Duration // Max duration is AuthServer.ExpireAfter
 	Note     string        // Optional

@@ -55,10 +55,9 @@ func TestNewAuth(t *testing.T) {
 	owner := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
-		Owner:  owner,
 		Scopes: scopes,
 	}
-	auth, err := s.NewAuth(req)
+	auth, err := s.NewAuth(owner, req)
 	if err != nil {
 		t.Error(err)
 	}
@@ -96,10 +95,9 @@ func TestGetAuthorization(t *testing.T) {
 	owner := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
-		Owner:  owner,
 		Scopes: scopes,
 	}
-	auth, err := s.NewAuth(req)
+	auth, err := s.NewAuth(owner, req)
 	if err != nil {
 		t.Error(err)
 	}
