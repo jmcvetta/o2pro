@@ -26,13 +26,6 @@ func col(db *mgo.Database) *mgo.Collection {
 }
 
 func setup(t *testing.T) (*Server, *mgo.Database) {
-	/*
-		if testServ != nil {
-			t.Log("Using existing testAuthServer\n")
-			return
-		}
-		t.Log("Initializing testAuthServer\n")
-	*/
 	session, err := mgo.Dial("mongodb://127.0.0.1")
 	if err != nil {
 		t.Fatal(err)
@@ -59,18 +52,13 @@ func TestNewAuth(t *testing.T) {
 		t.Error(err)
 	}
 	c := col(db)
-	cnt, err := c.Count()
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, 1, cnt)
 	query := struct {
 		Token string
 	}{
 		Token: auth.Token,
 	}
 	q := c.Find(&query)
-	cnt, err = q.Count()
+	cnt, err := q.Count()
 	if err != nil {
 		t.Error(err)
 	}
