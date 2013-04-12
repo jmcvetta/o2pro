@@ -38,10 +38,6 @@ func setup(t *testing.T) (*Server, *mgo.Database) {
 		t.Fatal(err)
 	}
 	db := session.DB("test_btoken")
-	err = db.DropDatabase()
-	if err != nil {
-		t.Fatal(err)
-	}
 	s, err := NewMongoServer(db, DefaultExpireAfter)
 	if err != nil {
 		t.Fatal(err)
