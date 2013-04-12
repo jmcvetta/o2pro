@@ -116,15 +116,14 @@ func TestGetAuthorization(t *testing.T) {
 func TestExpiration(t *testing.T) {
 	five, _ := time.ParseDuration("5ms")
 	seven, _ := time.ParseDuration("7ms")
-	s := setup(t)
+	s, _ := setup(t)
 	owner := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	req := AuthRequest{
-		Owner:       owner,
 		Scopes:      scopes,
 		ExpireAfter: five,
 	}
-	auth, err := s.NewAuth(req)
+	auth, err := s.NewAuth(owner, req)
 	if err != nil {
 		t.Error(err)
 	}
