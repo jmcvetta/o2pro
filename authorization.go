@@ -10,10 +10,10 @@ import (
 
 // An AuthRequest describes the details of an Authorization to be issued.
 type AuthRequest struct {
-	Scopes   []string      // http://tools.ietf.org/html/rfc6749#section-3.3
-	Duration time.Duration // Max duration is AuthServer.ExpireAfter
+	Scopes      []string      // http://tools.ietf.org/html/rfc6749#section-3.3
+	Duration    time.Duration // Max duration is AuthServer.ExpireAfter
 	ExpireAfter time.Duration // Max duration is AuthServer.ExpireAfter
-	Note     string        // Optional
+	Note        string        // Optional
 }
 
 type Authorization struct {
