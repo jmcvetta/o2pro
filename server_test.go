@@ -8,6 +8,7 @@ import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
 	"testing"
+	"time"
 )
 
 var (
@@ -33,10 +34,12 @@ func setup(t *testing.T) *Server {
 		t.Fatal(err)
 	}
 	testMongo = session.DB("test_btoken")
-	err = testMongo.DropDatabase()
-	if err != nil {
-		t.Fatal(err)
-	}
+	/*
+		err = testMongo.DropDatabase()
+		if err != nil {
+			t.Fatal(err)
+		}
+	*/
 	s, err := NewMongoServer(testMongo, DefaultExpireAfter)
 	if err != nil {
 		t.Fatal(err)
@@ -69,7 +72,7 @@ func TestNewAuth(t *testing.T) {
 	}{
 		Token: auth.Token,
 	}
-	q := c.Find(query)
+	q := c.Find(&query)
 	cnt, err = q.Count()
 	if err != nil {
 		t.Error(err)
@@ -108,4 +111,24 @@ func TestGetAuthorization(t *testing.T) {
 		_, ok := a.Scopes[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
+}
+
+func TestExpiration(t *testing.T) {
+	five, _ := time.ParseDuration("5ms")
+	seven, _ := time.ParseDuration("7ms")
+	s := setup(t)
+	owner := "jtkirk"
+	scopes := []string{"enterprise", "shuttlecraft"}
+	req := AuthRequest{
+		Owner:       owner,
+		Scopes:      scopes,
+		ExpireAfter: five,
+	}
+	auth, err := s.NewAuth(req)
+	if err != nil {
+		t.Error(err)
+	}
+	time.Sleep(seven) // Authorization should be expired
+	_, err = s.GetAuth(auth.Token)
+	assert.Equal(t, ErrInvalidToken, err)
 }
