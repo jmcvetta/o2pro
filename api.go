@@ -20,6 +20,7 @@ var (
 )
 
 func (s *Server) AuthReqHandler() http.HandlerFunc {
+	l := s.Logger
 	return func(w http.ResponseWriter, r *http.Request) {
 		//
 		// Authenticate
@@ -28,17 +29,21 @@ func (s *Server) AuthReqHandler() http.HandlerFunc {
 		malformed := "Malformed Authorization header"
 		matches := authRegex.FindStringSubmatch(str)
 		if len(matches) != 2 {
+			l.Println("Regex doesn't match")
 			http.Error(w, malformed, http.StatusBadRequest)
 			return
 		}
 		encoded := matches[1]
+		l.Println(encoded)
 		b, err := base64.StdEncoding.DecodeString(encoded)
 		if err != nil {
+			l.Println("Base64 decode failed")
 			http.Error(w, malformed, http.StatusBadRequest)
 			return
 		}
 		parts := strings.Split(string(b), ":")
 		if len(parts) != 2 {
+			l.Println("String split failed")
 			http.Error(w, malformed, http.StatusBadRequest)
 			return
 		}
