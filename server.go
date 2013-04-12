@@ -38,7 +38,7 @@ type Server struct {
 func (s *Server) NewAuth(req AuthRequest) (Authorization, error) {
 	tok := uuid.NewUUID().String()
 	scopes := map[string]bool{}
-	dur := req.Duration
+	dur := req.ExpireAfter
 	if dur.Seconds() == 0 || dur.Nanoseconds() > s.MaxDuration.Nanoseconds() {
 		dur = s.MaxDuration
 	}

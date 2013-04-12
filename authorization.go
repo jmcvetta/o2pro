@@ -9,10 +9,10 @@ import (
 )
 
 type AuthRequest struct {
-	Owner    string        // "Resource Owner" per http://tools.ietf.org/html/rfc6749#section-1.1
-	Scopes   []string      // http://tools.ietf.org/html/rfc6749#section-3.3
-	Duration time.Duration // Max duration is AuthServer.ExpireAfter
-	Note     string        // Optional
+	Owner       string        // "Resource Owner" per http://tools.ietf.org/html/rfc6749#section-1.1
+	Scopes      []string      // http://tools.ietf.org/html/rfc6749#section-3.3
+	ExpireAfter time.Duration // Max duration is AuthServer.ExpireAfter
+	Note        string        // Optional
 }
 
 type Authorization struct {
