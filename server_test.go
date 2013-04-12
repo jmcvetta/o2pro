@@ -7,7 +7,7 @@ package btoken
 import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
-	"net/url"
+	"log"
 	"testing"
 	"time"
 )
@@ -17,15 +17,12 @@ var (
 	testScopesDefault = []string{"shuttlecraft"}
 )
 
-func FakeAuthenticator(u url.Userinfo) (bool, error) {
-	return true, nil
-}
-
 func col(db *mgo.Database) *mgo.Collection {
 	return db.C("authorizations")
 }
 
 func setup(t *testing.T) (*Server, *mgo.Database) {
+	log.SetFlags(log.Ltime | log.Lshortfile)
 	session, err := mgo.Dial("mongodb://127.0.0.1")
 	if err != nil {
 		t.Fatal(err)

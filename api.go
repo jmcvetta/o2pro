@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	authReStr = `[Bb]asic (?P<encoded>\D+)`
+	authReStr = `[Bb]asic (?P<encoded>\S+)`
 	authRegex = regexp.MustCompile(authReStr)
 )
 
@@ -34,8 +34,7 @@ func (s *Server) AuthReqHandler() http.HandlerFunc {
 			return
 		}
 		encoded := matches[1]
-		l.Println(encoded)
-		b, err := base64.StdEncoding.DecodeString(encoded)
+		b, err := base64.URLEncoding.DecodeString(encoded)
 		if err != nil {
 			l.Println("Base64 decode failed")
 			http.Error(w, malformed, http.StatusBadRequest)
