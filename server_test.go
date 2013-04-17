@@ -18,9 +18,13 @@ var (
 	testScopesDefault = []string{"shuttlecraft"}
 )
 
-// fakeAuth authorizes everyone for everything.
-func fakeAuth(*url.Userinfo, AuthRequest) (bool, error) {
-	return true, nil
+// An Authorizer implementation that always authorizes owner "jtkirk", and never
+// authorizes anyone else.
+func kirkAuthorizer(u *url.Userinfo, r AuthRequest) (bool, error) {
+	if u.Username() == "jtkirk" {
+		return true, nil
+	}
+	return false, nil
 }
 
 func col(db *mgo.Database) *mgo.Collection {
@@ -34,7 +38,7 @@ func setup(t *testing.T) (*Server, *mgo.Database) {
 		t.Fatal(err)
 	}
 	db := session.DB("test_btoken")
-	s, err := NewMongoServer(db, DefaultExpireAfter, fakeAuth)
+	s, err := NewMongoServer(db, DefaultExpireAfter, kirkAuthorizer)
 	if err != nil {
 		t.Fatal(err)
 	}

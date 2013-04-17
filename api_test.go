@@ -13,25 +13,14 @@ import (
 	"testing"
 )
 
-// An Authorizer implementation that always authorizes owner "jtkirk", and never
-// authorizes anyone else.
-func kirkAuthorizer(u *url.Userinfo, r AuthRequest) (bool, error) {
-	if u.Username() == "jtkirk" {
-		return true, nil
-	}
-	return false, nil
-}
-
 func TestAuthRequest(t *testing.T) {
 	//
 	// Prepare handler
 	//
 	s, _ := setup(t)
-	s.Authorizer = kirkAuthorizer
 	h := s.AuthReqHandler()
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
-	// rec := httptest.NewRecorder()
 	//
 	// REST request
 	//
@@ -68,4 +57,38 @@ func TestAuthRequest(t *testing.T) {
 		_, ok := sm[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
+}
+
+func TestAuthRequestNoBody(t *testing.T) {
+	//
+	// Prepare handler
+	//
+	s, _ := setup(t)
+	h := s.AuthReqHandler()
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	//
+	// REST request
+	//
+	u := url.UserPassword("jtkirk", "Beam me up, Scotty!")
+	var a Authorization
+	var e interface{}
+	rr := restclient.RequestResponse{
+		Url:      hserv.URL,
+		Method:   "POST",
+		Userinfo: u,
+		// No Data field!
+		Result: &a,
+		Error:  &e,
+	}
+	c := restclient.New()
+	c.UnsafeBasicAuth = true
+	status, err := c.Do(&rr)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, 200, status)
+	assert.Equal(t, "jtkirk", a.Owner)
+	assert.NotEqual(t, nil, uuid.Parse(a.Token))
+	assert.Equal(t, 0, len(a.Scopes))
 }
