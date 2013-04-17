@@ -57,7 +57,8 @@ func (s *Server) AuthReqHandler() http.HandlerFunc {
 		err = dec.Decode(&areq)
 		if err != nil {
 			log.Println(err)
-			http.Error(w, malformed, http.StatusBadRequest)
+			msg := "Missing or bad request body"
+			http.Error(w, msg, http.StatusBadRequest)
 			return
 		}
 		a, err := s.Authorize(u, areq)
