@@ -6,12 +6,13 @@ package btoken
 
 import (
 	"labix.org/v2/mgo"
+	"labix.org/v2/mgo/bson"
 	"time"
 )
 
 // NewMongoAuthServer configures a MongoDB-based AuthServer.  If expireAfter is
 // not nil, authorizations will be automatically expired.
-func NewMongoServer(db *mgo.Database, duration string) (*Server, error) {
+func NewMongoServer(db *mgo.Database, duration string, a Authorizer) (*Server, error) {
 	dur, err := time.ParseDuration(duration)
 	if err != nil {
 		return nil, err
@@ -24,6 +25,7 @@ func NewMongoServer(db *mgo.Database, duration string) (*Server, error) {
 	serv := Server{
 		Storage:       &stor,
 		MaxDuration:   dur,
+		Authorizer:    a,
 		Logger:        DefaultLogger,
 		Scopes:        DefaultScopes,
 		DefaultScopes: DefaultScopes,
@@ -91,7 +93,9 @@ func (s *mongoStorage) GetAuth(token string) (Authorization, error) {
 	return a, nil
 }
 
-func (s *mongoStorage) SaveAuth(auth Authorization) error {
+func (s *mongoStorage) SaveAuth(auth *Authorization) error {
+	oid := bson.NewObjectId()
+	auth.AuthId = oid
 	return s.col().Insert(auth)
 }
 

@@ -5,6 +5,7 @@
 package btoken
 
 import (
+	"labix.org/v2/mgo/bson"
 	"time"
 )
 
@@ -16,10 +17,11 @@ type AuthRequest struct {
 }
 
 type Authorization struct {
-	AuthId     string // Unique storage-dependent ID for this Authorization
-	Token      string
-	Owner      string
-	Scopes     map[string]bool // Map for easy lookup; always true
-	Expiration time.Time
-	Note       string
+	AuthId     bson.ObjectId   `bson:"_id",json:"id"` // Unique storage-dependent ID for this Authorization
+	Token      string          `json:"token"`
+	Owner      string          `json:"owner"`
+	Scopes     []string        `json:"scopes"`
+	ScopesMap  map[string]bool `json:"-"` // Map for easy lookup; always true
+	Expiration time.Time       `json:"expiration"`
+	Note       string          `json:"note"`
 }
