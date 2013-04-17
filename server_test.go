@@ -8,6 +8,7 @@ import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
 	"log"
+	"net/url"
 	"testing"
 	"time"
 )
@@ -16,6 +17,11 @@ var (
 	testScopesAll     = []string{"enterprise", "shuttlecraft", "intrepid"}
 	testScopesDefault = []string{"shuttlecraft"}
 )
+
+// fakeAuth authorizes everyone for everything.
+func fakeAuth(*url.Userinfo, AuthRequest) (bool, error) {
+	return true, nil
+}
 
 func col(db *mgo.Database) *mgo.Collection {
 	return db.C("authorizations")
@@ -28,7 +34,7 @@ func setup(t *testing.T) (*Server, *mgo.Database) {
 		t.Fatal(err)
 	}
 	db := session.DB("test_btoken")
-	s, err := NewMongoServer(db, DefaultExpireAfter)
+	s, err := NewMongoServer(db, DefaultExpireAfter, fakeAuth)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +73,7 @@ func TestNewAuth(t *testing.T) {
 	}
 	assert.Equal(t, owner, a.Owner)
 	for _, scope := range scopes {
-		_, ok := a.Scopes[scope]
+		_, ok := a.ScopesMap[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
 }
@@ -89,7 +95,7 @@ func TestGetAuthorization(t *testing.T) {
 	}
 	assert.Equal(t, owner, a.Owner)
 	for _, scope := range scopes {
-		_, ok := a.Scopes[scope]
+		_, ok := a.ScopesMap[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
 }

@@ -60,8 +60,12 @@ func TestAuthRequest(t *testing.T) {
 	assert.Equal(t, 200, status)
 	assert.Equal(t, "jtkirk", a.Owner)
 	assert.NotEqual(t, nil, uuid.Parse(a.Token))
+	sm := map[string]bool{}
+	for _, scope := range a.Scopes {
+		sm[scope] = true
+	}
 	for _, scope := range scopes {
-		_, ok := a.Scopes[scope]
+		_, ok := sm[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
 }
