@@ -23,4 +23,5 @@ Under development - not yet ready for use.
 
 [![Build Status](https://drone.io/github.com/jmcvetta/btoken/status.png)](https://drone.io/github.com/jmcvetta/btoken/latest)
 
+[![Coverage Status](https://coveralls.io/repos/jmcvetta/btoken/badge.png?branch=master)](https://coveralls.io/r/jmcvetta/btoken)
 
