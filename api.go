@@ -55,8 +55,7 @@ func (s *Server) AuthReqHandler() http.HandlerFunc {
 		dec := json.NewDecoder(r.Body)
 		var areq AuthRequest
 		err = dec.Decode(&areq)
-		if err != nil {
-			log.Println(err)
+		if err != nil && err.Error() != "EOF" {
 			msg := "Missing or bad request body"
 			http.Error(w, msg, http.StatusBadRequest)
 			return
