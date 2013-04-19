@@ -9,6 +9,12 @@ import (
 	"time"
 )
 
+/*
+TODO: Make token req/resp conform to RFC:
+	http://tools.ietf.org/html/rfc6749#section-4.3.2
+	http://tools.ietf.org/html/rfc6749#section-4.3.3
+*/
+
 // An AuthRequest describes the details of an Authorization to be issued.
 type AuthRequest struct {
 	Scopes      []string      // http://tools.ietf.org/html/rfc6749#section-3.3
