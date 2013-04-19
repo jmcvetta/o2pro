@@ -22,6 +22,14 @@ type AuthRequest struct {
 	Note        string        // Optional
 }
 
+// http://tools.ietf.org/html/rfc6749#section-4.3.2
+type TokenRequest struct {
+	GrantType string `json:"grant_type"` // REQUIRED.  Value MUST be set to "password".
+	Username  string `json:"username"`   // REQUIRED.  The resource owner username.
+	Password  string `json:"password"`   // REQUIRED.  The resource owner password.
+	Scope     string `json:"scope"`      // OPTIONAL.  The scope of the access request as described by http://tools.ietf.org/html/rfc6749#section-3.3
+}
+
 type Authorization struct {
 	AuthId     bson.ObjectId   `bson:"_id",json:"id"` // Unique storage-dependent ID for this Authorization
 	Token      string          `json:"token"`
