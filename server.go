@@ -18,8 +18,7 @@ var (
 	DefaultScopes      = []string{"all"}
 )
 
-// A Storage back end saves and retrieves authorizations to persistent storage,
-// perhaps with caching.
+// A Storage back end saves and retrieves authorizations to persistent storage.
 type Storage interface {
 	SaveAuth(auth *Auth) error
 	GetAuth(token string) (*Auth, error)
@@ -30,8 +29,7 @@ type Storage interface {
 // client's credentials.
 type Authorizer func(username, password string, scopes []string) (bool, error)
 
-// A Server is an authorization service that can issue Oauth2-style bearer
-// tokens.
+// A Server is an OAuth2 authorization server.
 type Server struct {
 	Storage
 	Scopes        []string      // All scopes supported by this server
@@ -41,8 +39,7 @@ type Server struct {
 	Authorizer    Authorizer
 }
 
-// NewAuth issues a new Authorization based on an AuthRequest.
-// func (s *Server) NewAuth(owner string, req AuthRequest) (Authorization, error) {
+// NewAuth issues a new authorization.
 func (s *Server) NewAuth(t AuthTemplate) (Auth, error) {
 	a := Auth{
 		Token:      uuid.NewUUID().String(),
@@ -59,7 +56,7 @@ func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 
 }
 
-// Authorize may grant an authorization to a client.  The Authorizer function
+// Authorize may grant an authorization to a client.  Server.Authorizer
 // decides whether to make the grant. ErrNotAuthorized is returned if
 // authorization is denied.
 func (s *Server) Authorize(t AuthTemplate, password string) (Auth, error) {

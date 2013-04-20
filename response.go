@@ -4,8 +4,11 @@
 
 package o2pro
 
+/*
+	Implementation of  https://tools.ietf.org/html/rfc6749#section-5.1
+*/
+
 // A TokenResponse is sent on a successful authorization request.
-// https://tools.ietf.org/html/rfc6749#section-5.1
 type TokenResponse struct {
 	AccessToken  string `json:"access_token"`            // REQUIRED.  The access token issued by the authorization server.
 	TokenType    string `json:"token_type"`              // REQUIRED.  The type of the token issued as described in Section 7.1.  Value is case insensitive.

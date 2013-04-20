@@ -10,8 +10,7 @@ import (
 	"time"
 )
 
-// NewMongoAuthServer configures a MongoDB-based AuthServer.  If expireAfter is
-// not nil, authorizations will be automatically expired.
+// NewMongoAuthServer configures a MongoDB-based Server.
 func NewMongoServer(db *mgo.Database, duration string, a Authorizer) (*Server, error) {
 	dur, err := time.ParseDuration(duration)
 	if err != nil {
