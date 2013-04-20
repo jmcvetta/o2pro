@@ -6,9 +6,9 @@
 Package o2pro is an OAuth2 provider.  It currently implements only a subset of
 the full OAuth2 specification:
 
-Resource Owner Password Credentials Grant:
-http://tools.ietf.org/html/rfc6749#section-4.3
+- Resource Owner Password Credentials Grant: http://tools.ietf.org/html/rfc6749#section-4.3
 
-Bearer Tokens: https://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-16
+- Bearer Tokens: https://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-16
+
 */
 package o2pro
