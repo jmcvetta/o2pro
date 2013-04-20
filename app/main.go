@@ -10,7 +10,6 @@ import (
 	"labix.org/v2/mgo"
 	"log"
 	"net/http"
-	"net/url"
 )
 
 var (
@@ -18,7 +17,7 @@ var (
 )
 
 // fakeAuth authorizes everyone for everything.
-func fakeAuth(*url.Userinfo, o2pro.AuthRequest) (bool, error) {
+func fakeAuth(username, password string, scopes []string) (bool, error) {
 	return true, nil
 }
 
@@ -45,7 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	hf := srv.AuthReqHandler()
+	hf := srv.PasswordHandler()
 	http.HandleFunc("/auth", hf)
 	log.Println("Listening on ", addr)
 	log.Fatal(http.ListenAndServe(addr, nil))
