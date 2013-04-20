@@ -8,7 +8,6 @@ import (
 	"github.com/bmizerany/assert"
 	"labix.org/v2/mgo"
 	"log"
-	"net/url"
 	"testing"
 	"time"
 )
@@ -20,8 +19,8 @@ var (
 
 // An Authorizer implementation that always authorizes owner "jtkirk", and never
 // authorizes anyone else.
-func kirkAuthorizer(u *url.Userinfo, r AuthRequest) (bool, error) {
-	if u.Username() == "jtkirk" {
+func kirkAuthorizer(username, password string, scopes []string) (bool, error) {
+	if username == "jtkirk" && password == "Beam me up, Scotty!" {
 		return true, nil
 	}
 	return false, nil
@@ -49,12 +48,14 @@ func setup(t *testing.T) (*Server, *mgo.Database) {
 
 func TestNewAuth(t *testing.T) {
 	s, db := setup(t)
-	owner := "jtkirk"
+	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	req := AuthRequest{
-		Scopes: scopes,
+	tmpl := AuthTemplate{
+		Username: username,
+		Scopes:   scopes,
+		Note:     "foo bar baz",
 	}
-	auth, err := s.NewAuth(owner, req)
+	auth, err := s.NewAuth(tmpl)
 	if err != nil {
 		t.Error(err)
 	}
@@ -70,26 +71,28 @@ func TestNewAuth(t *testing.T) {
 		t.Error(err)
 	}
 	assert.Equal(t, 1, cnt)
-	a := Authorization{}
+	a := Auth{}
 	err = q.One(&a)
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, owner, a.Owner)
+	assert.Equal(t, username, a.Username)
+	sm := a.ScopesMap()
 	for _, scope := range scopes {
-		_, ok := a.ScopesMap[scope]
+		_, ok := sm[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
 }
 
 func TestGetAuthorization(t *testing.T) {
 	s, _ := setup(t)
-	owner := "jtkirk"
+	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	req := AuthRequest{
-		Scopes: scopes,
+	tmpl := AuthTemplate{
+		Username: username,
+		Scopes:   scopes,
 	}
-	auth, err := s.NewAuth(owner, req)
+	auth, err := s.NewAuth(tmpl)
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,9 +100,10 @@ func TestGetAuthorization(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, owner, a.Owner)
+	assert.Equal(t, username, a.Username)
+	sm := a.ScopesMap()
 	for _, scope := range scopes {
-		_, ok := a.ScopesMap[scope]
+		_, ok := sm[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
 }
@@ -108,13 +112,14 @@ func TestExpiration(t *testing.T) {
 	five, _ := time.ParseDuration("5ms")
 	seven, _ := time.ParseDuration("7ms")
 	s, _ := setup(t)
-	owner := "jtkirk"
+	s.Duration = five
+	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	req := AuthRequest{
-		Scopes:      scopes,
-		ExpireAfter: five,
+	tmpl := AuthTemplate{
+		Username: username,
+		Scopes:   scopes,
 	}
-	auth, err := s.NewAuth(owner, req)
+	auth, err := s.NewAuth(tmpl)
 	if err != nil {
 		t.Error(err)
 	}

@@ -24,7 +24,7 @@ func NewMongoServer(db *mgo.Database, duration string, a Authorizer) (*Server, e
 	}
 	serv := Server{
 		Storage:       &stor,
-		MaxDuration:   dur,
+		Duration:      dur,
 		Authorizer:    a,
 		Logger:        DefaultLogger,
 		Scopes:        DefaultScopes,
@@ -66,8 +66,8 @@ func (m *mongoStorage) Activate() error {
 	return nil
 }
 
-func (s *mongoStorage) GetAuth(token string) (Authorization, error) {
-	a := Authorization{}
+func (s *mongoStorage) GetAuth(token string) (*Auth, error) {
+	a := new(Auth)
 	c := s.col()
 	query := struct {
 		Token string
@@ -93,9 +93,9 @@ func (s *mongoStorage) GetAuth(token string) (Authorization, error) {
 	return a, nil
 }
 
-func (s *mongoStorage) SaveAuth(auth *Authorization) error {
+func (s *mongoStorage) SaveAuth(auth *Auth) error {
 	oid := bson.NewObjectId()
-	auth.AuthId = oid
+	auth.Id = oid
 	return s.col().Insert(auth)
 }
 

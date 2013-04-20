@@ -6,36 +6,35 @@ package o2pro
 
 import (
 	"labix.org/v2/mgo/bson"
+	"strings"
 	"time"
 )
 
-/*
-TODO: Make token req/resp conform to RFC:
-	http://tools.ietf.org/html/rfc6749#section-4.3.2
-	http://tools.ietf.org/html/rfc6749#section-4.3.3
-*/
-
-// An AuthRequest describes the details of an Authorization to be issued.
-type AuthRequest struct {
-	Scopes      []string      // http://tools.ietf.org/html/rfc6749#section-3.3
-	ExpireAfter time.Duration // Max duration is AuthServer.ExpireAfter
-	Note        string        // Optional
+type AuthTemplate struct {
+	Username string
+	Scopes   []string
+	Note     string
 }
 
-// http://tools.ietf.org/html/rfc6749#section-4.3.2
-type TokenRequest struct {
-	GrantType string `json:"grant_type"` // REQUIRED.  Value MUST be set to "password".
-	Username  string `json:"username"`   // REQUIRED.  The resource owner username.
-	Password  string `json:"password"`   // REQUIRED.  The resource owner password.
-	Scope     string `json:"scope"`      // OPTIONAL.  The scope of the access request as described by http://tools.ietf.org/html/rfc6749#section-3.3
+type Auth struct {
+	Id         bson.ObjectId `bson:"_id",json:"id"` // Unique storage-dependent ID for this Authorization
+	Token      string        `json:"token"`
+	Username   string        `json:"username"`
+	Scopes     []string      `json:"scopes"`
+	Expiration time.Time     `json:"expiration"`
+	Note       string        `json:"note"`
 }
 
-type Authorization struct {
-	AuthId     bson.ObjectId   `bson:"_id",json:"id"` // Unique storage-dependent ID for this Authorization
-	Token      string          `json:"token"`
-	Owner      string          `json:"owner"`
-	Scopes     []string        `json:"scopes"`
-	ScopesMap  map[string]bool `json:"-"` // Map for easy lookup; always true
-	Expiration time.Time       `json:"expiration"`
-	Note       string          `json:"note"`
+// ScopesMap returns a map of the scopes in this authorization, for easy look
+// up.  Bool is always true.
+func (a *Auth) ScopesMap() map[string]bool {
+	sm := map[string]bool{}
+	for _, s := range a.Scopes {
+		sm[s] = true
+	}
+	return sm
+}
+
+func (a *Auth) ScopeString() string {
+	return strings.Join(a.Scopes, " ")
 }
