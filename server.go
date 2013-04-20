@@ -2,7 +2,7 @@
 // terms of the GPL v3.  See http://www.gnu.org/copyleft/gpl.html for details.
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
-package btoken
+package o2pro
 
 import (
 	"code.google.com/p/go-uuid/uuid"
@@ -14,7 +14,7 @@ import (
 
 var (
 	DefaultExpireAfter = "8h" // Duration string for time.ParseDuration()
-	DefaultLogger      = log.New(os.Stdout, "[btoken] ", log.Ltime|log.Ldate|log.Lshortfile)
+	DefaultLogger      = log.New(os.Stdout, "[o2pro] ", log.Ltime|log.Ldate|log.Lshortfile)
 	DefaultScopes      = []string{"all"}
 )
 

@@ -2,7 +2,7 @@
 // terms of the GPL v3.  See http://www.gnu.org/copyleft/gpl.html for details.
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
-package btoken
+package o2pro
 
 import (
 	"github.com/bmizerany/assert"
@@ -37,7 +37,7 @@ func setup(t *testing.T) (*Server, *mgo.Database) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	db := session.DB("test_btoken")
+	db := session.DB("test_o2pro")
 	s, err := NewMongoServer(db, DefaultExpireAfter, kirkAuthorizer)
 	if err != nil {
 		t.Fatal(err)

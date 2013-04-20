@@ -3,10 +3,12 @@
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
 /*
-Package btoken implements Oauth2-style bearer tokens, issued via resourse owner
-password credential grant.
+Package o2pro is an OAuth2 provider.  It currently implements only a subset of
+the full OAuth2 specification:
 
+Resource Owner Password Credentials Grant:
 http://tools.ietf.org/html/rfc6749#section-4.3
-https://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-16
+
+Bearer Tokens: https://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-16
 */
-package btoken
+package o2pro

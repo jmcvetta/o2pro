@@ -6,7 +6,7 @@ package main
 
 import (
 	"github.com/darkhelmet/env"
-	"github.com/jmcvetta/btoken"
+	"github.com/jmcvetta/o2pro"
 	"labix.org/v2/mgo"
 	"log"
 	"net/http"
@@ -18,7 +18,7 @@ var (
 )
 
 // fakeAuth authorizes everyone for everything.
-func fakeAuth(*url.Userinfo, btoken.AuthRequest) (bool, error) {
+func fakeAuth(*url.Userinfo, o2pro.AuthRequest) (bool, error) {
 	return true, nil
 }
 
@@ -37,11 +37,11 @@ func main() {
 	db := session.DB("")
 	_, err = db.CollectionNames()
 	if err != nil || db.Name == "test" {
-		log.Println("Setting db name to 'btoken'.")
-		db = session.DB("btoken")
+		log.Println("Setting db name to 'o2pro'.")
+		db = session.DB("o2pro")
 	}
-	a := btoken.Authorizer(fakeAuth)
-	srv, err := btoken.NewMongoServer(db, "8h", a)
+	a := o2pro.Authorizer(fakeAuth)
+	srv, err := o2pro.NewMongoServer(db, "8h", a)
 	if err != nil {
 		log.Fatal(err)
 	}

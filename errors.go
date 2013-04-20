@@ -2,7 +2,7 @@
 // terms of the GPL v3.  See http://www.gnu.org/copyleft/gpl.html for details.
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
-package btoken
+package o2pro
 
 import (
 	"errors"
