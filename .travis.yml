@@ -10,13 +10,3 @@ notificaitons:
 before_script: 
 - go get github.com/bmizerany/assert
 - go get github.com/jmcvetta/restclient
-after_script:
-- go get github.com/axw/gocov/gocov
-- go get github.com/jmcvetta/goveralls
-- goveralls $COVERALLS_TOKEN
-env: 
-  global: 
-  - secure: |-
-      BWfnJY1zJGqzo86JKyRoMGlgJ1kJwqIbg34pNbMsd35H+vWBNDdFQNyB1Mhx
-      SHjWk8erX4bjSsp6tuXUySlxa8EsGA++OhxuaVaDYPrbEopcrZynQqj0ueku
-      XHgwYbzlaCWM3ipjcdpba8+LIfPn9FbNdVRFywEr6PFnBfhlFAU=
