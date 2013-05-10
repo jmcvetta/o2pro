@@ -5,9 +5,7 @@
 package o2pro
 
 import (
-	"labix.org/v2/mgo/bson"
 	"strings"
-	"time"
 )
 
 type AuthTemplate struct {
@@ -16,18 +14,9 @@ type AuthTemplate struct {
 	Note     string
 }
 
-type Auth struct {
-	Id         bson.ObjectId `bson:"_id",json:"id"` // Unique storage-dependent ID for this Authorization
-	Token      string        `json:"token"`
-	Username   string        `json:"username"`
-	Scopes     []string      `json:"scopes"`
-	Expiration time.Time     `json:"expiration"`
-	Note       string        `json:"note"`
-}
-
 // ScopesMap returns a map of the scopes in this authorization, for easy look
 // up.  Bool is always true.
-func (a *Auth) ScopesMap() map[string]bool {
+func (a *Authorization) ScopesMap() map[string]bool {
 	sm := map[string]bool{}
 	for _, s := range a.Scopes {
 		sm[s] = true
@@ -35,6 +24,6 @@ func (a *Auth) ScopesMap() map[string]bool {
 	return sm
 }
 
-func (a *Auth) ScopeString() string {
+func (a *Authorization) ScopeString() string {
 	return strings.Join(a.Scopes, " ")
 }

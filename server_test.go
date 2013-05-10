@@ -71,7 +71,7 @@ func TestNewAuth(t *testing.T) {
 		t.Error(err)
 	}
 	assert.Equal(t, 1, cnt)
-	a := Auth{}
+	a := Authorization{}
 	err = q.One(&a)
 	if err != nil {
 		t.Error(err)
@@ -84,7 +84,7 @@ func TestNewAuth(t *testing.T) {
 	}
 }
 
-func TestGetAuthorization(t *testing.T) {
+func TestAuthorization(t *testing.T) {
 	s, _ := setup(t)
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
@@ -96,7 +96,7 @@ func TestGetAuthorization(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	a, err := s.GetAuth(auth.Token)
+	a, err := s.Authorization(auth.Token)
 	if err != nil {
 		t.Error(err)
 	}
@@ -124,6 +124,6 @@ func TestExpiration(t *testing.T) {
 		t.Error(err)
 	}
 	time.Sleep(seven) // Authorization should be expired
-	_, err = s.GetAuth(auth.Token)
+	_, err = s.Authorization(auth.Token)
 	assert.Equal(t, ErrInvalidToken, err)
 }

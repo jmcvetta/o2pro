@@ -8,25 +8,4 @@ package o2pro
 http://tools.ietf.org/html/rfc6749#section-2
 */
 
-import (
-	"labix.org/v2/mgo/bson"
-)
-
-type ClientType int
-
-const (
-	PublicClient ClientType = iota
-	ConfidentialClient
-)
-
-type ClientTemplate struct {
-}
-
-type Client struct {
-	Id          bson.ObjectId `bson:"_id",json:"id"` // Storage-dependent ID for this Client
-	ClientType  ClientType
-	RedirectUri string
-	AppName     string
-	WebSite     string
-	Description string
-}
+import ()

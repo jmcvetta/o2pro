@@ -65,8 +65,8 @@ func (m *mongoStorage) Activate() error {
 	return nil
 }
 
-func (s *mongoStorage) GetAuth(token string) (*Auth, error) {
-	a := new(Auth)
+func (s *mongoStorage) Authorization(token string) (*Authorization, error) {
+	a := new(Authorization)
 	c := s.col()
 	query := struct {
 		Token string
@@ -92,10 +92,10 @@ func (s *mongoStorage) GetAuth(token string) (*Auth, error) {
 	return a, nil
 }
 
-func (s *mongoStorage) SaveAuth(auth *Auth) error {
+func (s *mongoStorage) SaveAuth(a *Authorization) error {
 	oid := bson.NewObjectId()
-	auth.Id = oid
-	return s.col().Insert(auth)
+	a.Id = oid
+	return s.col().Insert(a)
 }
 
 // col returns a Collection object in a new mgo session

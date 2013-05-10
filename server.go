@@ -20,8 +20,8 @@ var (
 
 // A Storage back end saves and retrieves authorizations to persistent storage.
 type Storage interface {
-	SaveAuth(auth *Auth) error
-	GetAuth(token string) (*Auth, error)
+	SaveAuth(a *Authorization) error
+	Authorization(token string) (*Authorization, error)
 	Activate() error // Called when Server is started
 }
 
@@ -40,8 +40,8 @@ type Server struct {
 }
 
 // NewAuth issues a new authorization.
-func (s *Server) NewAuth(t AuthTemplate) (Auth, error) {
-	a := Auth{
+func (s *Server) NewAuth(t AuthTemplate) (Authorization, error) {
+	a := Authorization{
 		Token:      uuid.NewUUID().String(),
 		Username:   t.Username,
 		Scopes:     t.Scopes,
@@ -59,8 +59,8 @@ func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 // Authorize may grant an authorization to a client.  Server.Authorizer
 // decides whether to make the grant. ErrNotAuthorized is returned if
 // authorization is denied.
-func (s *Server) Authorize(t AuthTemplate, password string) (Auth, error) {
-	var a Auth
+func (s *Server) Authorize(t AuthTemplate, password string) (Authorization, error) {
+	var a Authorization
 	ok, err := s.Authorizer(t.Username, password, t.Scopes)
 	if err != nil {
 		return a, err
