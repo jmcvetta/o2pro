@@ -23,8 +23,6 @@ documentation.
 Under development - not yet ready for use.
 
 [![Build Status](https://travis-ci.org/jmcvetta/o2pro.png)](https://travis-ci.org/jmcvetta/o2pro)
-
 [![Build Status](https://drone.io/github.com/jmcvetta/o2pro/status.png)](https://drone.io/github.com/jmcvetta/o2pro/latest)
-
 [![Coverage Status](https://coveralls.io/repos/jmcvetta/o2pro/badge.png?branch=master)](https://coveralls.io/r/jmcvetta/o2pro)
 
