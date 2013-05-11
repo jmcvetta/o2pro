@@ -18,11 +18,13 @@ var (
 	DefaultScopes      = []string{"all"}
 )
 
+type Scopes map[string]bool // scope_name:true
+
 // A Storage back end saves and retrieves authorizations to persistent storage.
 type Storage interface {
 	SaveAuthz(a *Authz) error
 	Authz(token string) (*Authz, error)
-	Activate() error // Called when Server is started
+	// Run() error // Called when Server is started
 	Initialize() error
 	Migrate() error
 }
@@ -30,6 +32,21 @@ type Storage interface {
 // An Authorizer decides whether to grant an authorization request based on
 // client's credentials.
 type Authorizer func(user, password string, scopes []string) (bool, error)
+
+func NewServer(s Storage, a Authorizer) *Server {
+	dur, err := time.ParseDuration(DefaultExpireAfter)
+	if err != nil {
+		log.Panic(err)
+	}
+	return &Server{
+		Storage:       s,
+		Scopes:        DefaultScopes,
+		DefaultScopes: DefaultScopes,
+		Duration:      dur,
+		Logger:        DefaultLogger,
+		Authorizer:    a,
+	}
+}
 
 // A Server is an OAuth2 authorization server.
 type Server struct {
@@ -42,7 +59,7 @@ type Server struct {
 }
 
 // NewAuth issues a new authorization.
-func (s *Server) NewAuth(t AuthTemplate) (Authz, error) {
+func (s *Server) NewAuthz(t AuthTemplate) (*Authz, error) {
 	a := Authz{
 		Token:      uuid.New(),
 		Uuid:       uuid.New(),
@@ -52,7 +69,7 @@ func (s *Server) NewAuth(t AuthTemplate) (Authz, error) {
 		Note:       t.Note,
 	}
 	err := s.SaveAuthz(&a)
-	return a, err
+	return &a, err
 }
 
 func (s *Server) Error(w http.ResponseWriter, error string, code int) {
@@ -62,8 +79,8 @@ func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 // Authorize may grant an authorization to a client.  Server.Authorizer
 // decides whether to make the grant. ErrNotAuthorized is returned if
 // authorization is denied.
-func (s *Server) Authorize(t AuthTemplate, password string) (Authz, error) {
-	var a Authz
+func (s *Server) Authorize(t AuthTemplate, password string) (*Authz, error) {
+	a := new(Authz)
 	ok, err := s.Authorizer(t.User, password, t.Scopes)
 	if err != nil {
 		return a, err
@@ -71,5 +88,5 @@ func (s *Server) Authorize(t AuthTemplate, password string) (Authz, error) {
 	if !ok {
 		return a, ErrNotAuthorized
 	}
-	return s.NewAuth(t)
+	return s.NewAuthz(t)
 }

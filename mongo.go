@@ -9,27 +9,14 @@ import (
 	"time"
 )
 
-// NewMongoAuthServer configures a MongoDB-based Server.
-func NewMongoServer(db *mgo.Database, duration string, a Authorizer) (*Server, error) {
-	dur, err := time.ParseDuration(duration)
-	if err != nil {
-		return nil, err
-	}
-	stor := mongoStorage{
+// func NewMongoStorage(db *mgo.Database, dur time.Duration, a Authorizer) (*Storage, error) {
+func NewMongoStorage(db *mgo.Database, dur time.Duration) Storage {
+
+	return &mongoStorage{
 		db:          db,
 		name:        "authorizations",
 		expireAfter: dur,
 	}
-	serv := Server{
-		Storage:       &stor,
-		Duration:      dur,
-		Authorizer:    a,
-		Logger:        DefaultLogger,
-		Scopes:        DefaultScopes,
-		DefaultScopes: DefaultScopes,
-	}
-	err = serv.Activate()
-	return &serv, err
 }
 
 type mongoStorage struct {
@@ -39,7 +26,7 @@ type mongoStorage struct {
 }
 
 func (m *mongoStorage) Activate() error {
-	return m.Migrate()
+	return nil
 }
 
 func (m *mongoStorage) Initialize() error {
