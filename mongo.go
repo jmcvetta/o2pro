@@ -6,7 +6,6 @@ package o2pro
 
 import (
 	"labix.org/v2/mgo"
-	"labix.org/v2/mgo/bson"
 	"time"
 )
 
@@ -65,8 +64,8 @@ func (m *mongoStorage) Activate() error {
 	return nil
 }
 
-func (s *mongoStorage) Authorization(token string) (*Authorization, error) {
-	a := new(Authorization)
+func (s *mongoStorage) Authz(token string) (*Authz, error) {
+	a := new(Authz)
 	c := s.col()
 	query := struct {
 		Token string
@@ -92,9 +91,7 @@ func (s *mongoStorage) Authorization(token string) (*Authorization, error) {
 	return a, nil
 }
 
-func (s *mongoStorage) SaveAuth(a *Authorization) error {
-	oid := bson.NewObjectId()
-	a.Id = oid
+func (s *mongoStorage) SaveAuthz(a *Authz) error {
 	return s.col().Insert(a)
 }
 

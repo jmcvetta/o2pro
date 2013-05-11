@@ -9,20 +9,23 @@ import (
 	"time"
 )
 
-type Authorization struct {
-	Id         bson.ObjectId `bson:"_id",json:"id"` // Unique storage-dependent ID for this Authorization
-	Token      string        `json:"token"`
-	Username   string        `json:"username"`
-	Scopes     []string      `json:"scopes"`
-	Expiration time.Time     `json:"expiration"`
-	Note       string        `json:"note"`
+// An Authz is an authorization.
+type Authz struct {
+	Id         int64
+	Uuid       string `bson:"_id"`
+	Token      string
+	Username   string
+	Scopes     []string
+	Issued     time.Time
+	Expiration time.Time
+	Note       string
 }
 
 type ClientType string
 
 const (
 	PublicClient       ClientType = "public"
-	ConfidentialClient            = "Confidential"
+	ConfidentialClient            = "confidential"
 )
 
 type Client struct {

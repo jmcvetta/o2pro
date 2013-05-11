@@ -71,7 +71,7 @@ func TestNewAuth(t *testing.T) {
 		t.Error(err)
 	}
 	assert.Equal(t, 1, cnt)
-	a := Authorization{}
+	a := Authz{}
 	err = q.One(&a)
 	if err != nil {
 		t.Error(err)
@@ -84,7 +84,7 @@ func TestNewAuth(t *testing.T) {
 	}
 }
 
-func TestAuthorization(t *testing.T) {
+func TestAuthz(t *testing.T) {
 	s, _ := setup(t)
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
@@ -96,7 +96,7 @@ func TestAuthorization(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	a, err := s.Authorization(auth.Token)
+	a, err := s.Authz(auth.Token)
 	if err != nil {
 		t.Error(err)
 	}
@@ -123,7 +123,7 @@ func TestExpiration(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	time.Sleep(seven) // Authorization should be expired
-	_, err = s.Authorization(auth.Token)
+	time.Sleep(seven) // Authz should be expired
+	_, err = s.Authz(auth.Token)
 	assert.Equal(t, ErrInvalidToken, err)
 }
