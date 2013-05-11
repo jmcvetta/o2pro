@@ -39,6 +39,14 @@ type mongoStorage struct {
 }
 
 func (m *mongoStorage) Activate() error {
+	return m.Migrate()
+}
+
+func (m *mongoStorage) Initialize() error {
+	return m.Migrate()
+}
+
+func (m *mongoStorage) Migrate() error {
 	//
 	// Declare Indexes
 	//
@@ -62,6 +70,7 @@ func (m *mongoStorage) Activate() error {
 		}
 	}
 	return nil
+
 }
 
 func (s *mongoStorage) Authz(token string) (*Authz, error) {

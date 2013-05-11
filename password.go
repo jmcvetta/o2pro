@@ -81,9 +81,9 @@ func (s *Server) PasswordHandler() http.HandlerFunc {
 			return
 		}
 		t := AuthTemplate{
-			Username: preq.Username,
-			Scopes:   strings.Split(preq.Scope, " "),
-			Note:     preq.Note,
+			User:   preq.Username,
+			Scopes: strings.Split(preq.Scope, " "),
+			Note:   preq.Note,
 		}
 		a, err := s.Authorize(t, password)
 		switch {

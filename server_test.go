@@ -51,9 +51,9 @@ func TestNewAuth(t *testing.T) {
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	tmpl := AuthTemplate{
-		Username: username,
-		Scopes:   scopes,
-		Note:     "foo bar baz",
+		User:   username,
+		Scopes: scopes,
+		Note:   "foo bar baz",
 	}
 	auth, err := s.NewAuth(tmpl)
 	if err != nil {
@@ -76,7 +76,7 @@ func TestNewAuth(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, username, a.Username)
+	assert.Equal(t, username, a.User)
 	sm := a.ScopesMap()
 	for _, scope := range scopes {
 		_, ok := sm[scope]
@@ -89,8 +89,8 @@ func TestAuthz(t *testing.T) {
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	tmpl := AuthTemplate{
-		Username: username,
-		Scopes:   scopes,
+		User:   username,
+		Scopes: scopes,
 	}
 	auth, err := s.NewAuth(tmpl)
 	if err != nil {
@@ -100,7 +100,7 @@ func TestAuthz(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, username, a.Username)
+	assert.Equal(t, username, a.User)
 	sm := a.ScopesMap()
 	for _, scope := range scopes {
 		_, ok := sm[scope]
@@ -116,8 +116,8 @@ func TestExpiration(t *testing.T) {
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	tmpl := AuthTemplate{
-		Username: username,
-		Scopes:   scopes,
+		User:   username,
+		Scopes: scopes,
 	}
 	auth, err := s.NewAuth(tmpl)
 	if err != nil {

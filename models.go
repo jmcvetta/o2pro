@@ -5,20 +5,25 @@
 package o2pro
 
 import (
-	"labix.org/v2/mgo/bson"
 	"time"
 )
 
 // An Authz is an authorization.
 type Authz struct {
-	Id         int64
+	Id         int64  `bson:",omitempty`
 	Uuid       string `bson:"_id"`
 	Token      string
-	Username   string
+	User       string // Unique user identifier
+	Client     *Client
+	ClientId   int64 `bson:",omitempty"`
 	Scopes     []string
 	Issued     time.Time
 	Expiration time.Time
 	Note       string
+}
+
+type Scope struct {
+	Id int64 `bson:",omitempty`
 }
 
 type ClientType string
@@ -29,7 +34,7 @@ const (
 )
 
 type Client struct {
-	Id          bson.ObjectId `bson:"_id",json:"id"` // Storage-dependent ID for this Client
+	Id          int64 `bson:",omitempty`
 	ClientType  ClientType
 	RedirectUri string
 	AppName     string

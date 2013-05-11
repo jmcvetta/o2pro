@@ -23,11 +23,13 @@ type Storage interface {
 	SaveAuthz(a *Authz) error
 	Authz(token string) (*Authz, error)
 	Activate() error // Called when Server is started
+	Initialize() error
+	Migrate() error
 }
 
 // An Authorizer decides whether to grant an authorization request based on
 // client's credentials.
-type Authorizer func(username, password string, scopes []string) (bool, error)
+type Authorizer func(user, password string, scopes []string) (bool, error)
 
 // A Server is an OAuth2 authorization server.
 type Server struct {
@@ -44,7 +46,7 @@ func (s *Server) NewAuth(t AuthTemplate) (Authz, error) {
 	a := Authz{
 		Token:      uuid.New(),
 		Uuid:       uuid.New(),
-		Username:   t.Username,
+		User:       t.User,
 		Scopes:     t.Scopes,
 		Expiration: time.Now().Add(s.Duration),
 		Note:       t.Note,
@@ -62,7 +64,7 @@ func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 // authorization is denied.
 func (s *Server) Authorize(t AuthTemplate, password string) (Authz, error) {
 	var a Authz
-	ok, err := s.Authorizer(t.Username, password, t.Scopes)
+	ok, err := s.Authorizer(t.User, password, t.Scopes)
 	if err != nil {
 		return a, err
 	}

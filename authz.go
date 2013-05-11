@@ -9,9 +9,9 @@ import (
 )
 
 type AuthTemplate struct {
-	Username string
-	Scopes   []string
-	Note     string
+	User   string
+	Scopes []string
+	Note   string
 }
 
 // ScopesMap returns a map of the scopes in this authorization, for easy look
