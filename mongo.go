@@ -11,7 +11,6 @@ import (
 
 // func NewMongoStorage(db *mgo.Database, dur time.Duration, a Authorizer) (*Storage, error) {
 func NewMongoStorage(db *mgo.Database, dur time.Duration) Storage {
-
 	return &mongoStorage{
 		db:          db,
 		name:        "authorizations",
@@ -23,10 +22,6 @@ type mongoStorage struct {
 	db          *mgo.Database
 	name        string // Collection name
 	expireAfter time.Duration
-}
-
-func (m *mongoStorage) Activate() error {
-	return nil
 }
 
 func (m *mongoStorage) Initialize() error {
