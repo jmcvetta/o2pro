@@ -14,11 +14,10 @@ import (
 	"testing"
 )
 
-func TestPasswordRequest(t *testing.T) {
+func doTestPasswordRequest(s *Server, t *testing.T) {
 	//
 	// Prepare handler
 	//
-	s, _ := setup(t)
 	h := s.PasswordHandler()
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()

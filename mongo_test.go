@@ -12,32 +12,24 @@ import (
 	"time"
 )
 
-var (
-	testScopesAll     = []string{"enterprise", "shuttlecraft", "intrepid"}
-	testScopesDefault = []string{"shuttlecraft"}
-)
-
-// An Authorizer implementation that always authorizes owner "jtkirk", and never
-// authorizes anyone else.
-func kirkAuthorizer(username, password string, scopes []string) (bool, error) {
-	if username == "jtkirk" && password == "Beam me up, Scotty!" {
-		return true, nil
-	}
-	return false, nil
-}
-
 func col(db *mgo.Database) *mgo.Collection {
 	return db.C("authorizations")
 }
 
-func setup(t *testing.T) (*Server, *mgo.Database) {
+func testMongo(t *testing.T) (*Server, *mgo.Database) {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	session, err := mgo.Dial("mongodb://127.0.0.1")
 	if err != nil {
 		t.Fatal(err)
 	}
 	db := session.DB("test_o2pro")
-	s, err := NewMongoServer(db, DefaultExpireAfter, kirkAuthorizer)
+	dur, err := time.ParseDuration(DefaultExpireAfter)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stor := NewMongoStorage(db, dur)
+	// s, err := NewMongoServer(db, DefaultExpireAfter, kirkAuthorizer)
+	s := NewServer(stor, kirkAuthorizer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,8 +38,8 @@ func setup(t *testing.T) (*Server, *mgo.Database) {
 	return s, db
 }
 
-func TestNewAuth(t *testing.T) {
-	s, db := setup(t)
+func TestMgoNewAuth(t *testing.T) {
+	s, db := testMongo(t)
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	tmpl := AuthTemplate{
@@ -55,7 +47,7 @@ func TestNewAuth(t *testing.T) {
 		Scopes: scopes,
 		Note:   "foo bar baz",
 	}
-	auth, err := s.NewAuth(tmpl)
+	auth, err := s.NewAuthz(tmpl)
 	if err != nil {
 		t.Error(err)
 	}
@@ -84,46 +76,17 @@ func TestNewAuth(t *testing.T) {
 	}
 }
 
-func TestAuthz(t *testing.T) {
-	s, _ := setup(t)
-	username := "jtkirk"
-	scopes := []string{"enterprise", "shuttlecraft"}
-	tmpl := AuthTemplate{
-		User:   username,
-		Scopes: scopes,
-	}
-	auth, err := s.NewAuth(tmpl)
-	if err != nil {
-		t.Error(err)
-	}
-	a, err := s.Authz(auth.Token)
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, username, a.User)
-	sm := a.ScopesMap()
-	for _, scope := range scopes {
-		_, ok := sm[scope]
-		assert.T(t, ok, "Expected scope: ", scope)
-	}
+func TestMgoAuthz(t *testing.T) {
+	s, _ := testMongo(t)
+	doTestAuthz(s, t)
 }
 
-func TestExpiration(t *testing.T) {
-	five, _ := time.ParseDuration("5ms")
-	seven, _ := time.ParseDuration("7ms")
-	s, _ := setup(t)
-	s.Duration = five
-	username := "jtkirk"
-	scopes := []string{"enterprise", "shuttlecraft"}
-	tmpl := AuthTemplate{
-		User:   username,
-		Scopes: scopes,
-	}
-	auth, err := s.NewAuth(tmpl)
-	if err != nil {
-		t.Error(err)
-	}
-	time.Sleep(seven) // Authz should be expired
-	_, err = s.Authz(auth.Token)
-	assert.Equal(t, ErrInvalidToken, err)
+func TestMgoExpiration(t *testing.T) {
+	s, _ := testMongo(t)
+	doTestExpiration(s, t)
+}
+
+func TestMgoPasswordRequest(t *testing.T) {
+	s, _ := testMongo(t)
+	doTestPasswordRequest(s, t)
 }
