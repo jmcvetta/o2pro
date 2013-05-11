@@ -39,6 +39,7 @@ func doTestAuthz(s *Server, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	prettyPrint(a)
 	assert.Equal(t, username, a.User)
 	sm := a.ScopesMap()
 	for _, scope := range scopes {
