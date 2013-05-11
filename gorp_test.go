@@ -4,6 +4,7 @@
 
 package o2pro
 
+/*
 import (
 	"github.com/coocood/qbs"
 	"github.com/darkhelmet/env"
@@ -64,7 +65,6 @@ func TestQbsNewAuth(t *testing.T) {
 		t.Error(err)
 	}
 	prettyPrint(a1)
-	/*
 	assert.Equal(t, 1, cnt)
 	a := Authz{}
 	err = q.One(&a)
@@ -77,7 +77,6 @@ func TestQbsNewAuth(t *testing.T) {
 		_, ok := sm[scope]
 		assert.T(t, ok, "Expected scope: ", scope)
 	}
-	*/
 }
 
 func TestQbsAuthz(t *testing.T) {
@@ -94,3 +93,4 @@ func TestQbsPasswordRequest(t *testing.T) {
 	s, _ := testQbs(t)
 	doTestPasswordRequest(s, t)
 }
+*/
