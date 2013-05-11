@@ -37,7 +37,7 @@ func doTestAuthz(s *Server, t *testing.T) {
 	}
 	a, err := s.Authz(auth.Token)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	assert.Equal(t, username, a.User)
 	sm := a.ScopesMap()
@@ -59,9 +59,11 @@ func doTestExpiration(s *Server, t *testing.T) {
 	}
 	auth, err := s.NewAuthz(tmpl)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	time.Sleep(seven) // Authz should be expired
 	_, err = s.Authz(auth.Token)
-	assert.Equal(t, ErrInvalidToken, err)
+	if err != ErrInvalidToken {
+		t.Fatal(err)
+	}
 }

@@ -8,26 +8,18 @@ import (
 	"time"
 )
 
-// tables is the list of structs defining tables for qbs to migrate.
-var tables = []interface{}{
-	&Authz{},
-	&AuthzScope{},
-	&Client{},
-	&Code{},
-}
-
 // An Authz is an authorization.
 type Authz struct {
-	Id         int64  `bson:",omitempty`
-	Uuid       string `bson:"_id"`
-	Token      string
-	User       string // Unique identifier for resource owner
-	Client     *Client
-	ClientId   int64 `bson:",omitempty"`
+	Id    int64  `bson:",omitempty`
+	Uuid  string `qbs:"unique,size:255" bson:"_id"`
+	Token string `qbs:"index,unique,size:255"`
+	User  string `qbs:"index,size:255" ` // Unique identifier for resource owner
+	// ClientId   int64  `qbs:"fk:Client" bson:",omitempty"`
+	// Client     *Client
 	Issued     time.Time
 	Expiration time.Time
-	Note       string
-	Scopes     []string
+	Note       string   `qbs:"size:511"`
+	Scopes     []string `qbs:"-"`
 }
 
 type AuthzScope struct {
@@ -37,18 +29,16 @@ type AuthzScope struct {
 	Scope   string
 }
 
-type ClientType string
-
 const (
-	PublicClient       ClientType = "public"
-	ConfidentialClient            = "confidential"
+	PublicClient       = "public"
+	ConfidentialClient = "confidential"
 )
 
 // A Client is an application making protected resource requests on behalf of
 // the resource owner and with its authorization.
 type Client struct {
 	Id          int64 `bson:",omitempty`
-	ClientType  ClientType
+	ClientType  string
 	RedirectUri string
 	AppName     string
 	WebSite     string
