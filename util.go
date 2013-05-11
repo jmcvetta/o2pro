@@ -6,24 +6,16 @@ package o2pro
 
 import (
 	"encoding/json"
-	"log"
 	"path/filepath"
 	"runtime"
 	"strconv"
 )
 
 func prettyPrint(v interface{}) {
-	_, file, line, ok := runtime.Caller(1)
-	if !ok {
-		file = "???"
-		line = 0
-	}
+	_, file, line, _ := runtime.Caller(1)
 	lineNo := strconv.Itoa(line)
 	file = filepath.Base(file)
-	b, err := json.MarshalIndent(v, "", "\t")
-	if err != nil {
-		log.Panic(err)
-	}
+	b, _ := json.MarshalIndent(v, "", "\t")
 	s := file + ":" + lineNo + ": \n" + string(b) + "\n"
 	println(s)
 }
