@@ -28,6 +28,10 @@ func testMongo(t *testing.T) (*Server, *mgo.Database) {
 		t.Fatal(err)
 	}
 	stor := NewMongoStorage(db, dur)
+	err = stor.Initialize()
+	if err != nil {
+		t.Fatal(err)
+	}
 	// s, err := NewMongoServer(db, DefaultExpireAfter, kirkAuthorizer)
 	s := NewServer(stor, kirkAuthorizer)
 	if err != nil {
