@@ -10,24 +10,26 @@ import (
 
 // An Authz is an authorization.
 type Authz struct {
-	Id    int64  `bson:",omitempty`
-	Uuid  string `qbs:"unique,size:255" bson:"_id"`
-	Token string `qbs:"index,unique,size:255"`
-	User  string `qbs:"index,size:255" ` // Unique identifier for resource owner
-	// ClientId   int64  `qbs:"fk:Client" bson:",omitempty"`
-	// Client     *Client
+	Id         int64 `bson:",omitempty`
+	Uuid       string
+	Token      string
+	User       string
+	ClientId   int64
+	Client     *Client
 	Issued     time.Time
 	Expiration time.Time
-	Note       string   `qbs:"size:511"`
-	Scopes     []string `qbs:"-"`
+	Note       string
+	Scopes     []string
 }
 
+/*
 type AuthzScope struct {
 	Id      int64
 	AuthzId int64 `qbs:"fk:Authz`
 	Authz   *Authz
 	Scope   string
 }
+*/
 
 const (
 	PublicClient       = "public"
@@ -37,8 +39,8 @@ const (
 // A Client is an application making protected resource requests on behalf of
 // the resource owner and with its authorization.
 type Client struct {
-	Id          int64 `bson:",omitempty`
-	ClientType  string
+	Id          int64  `bson:",omitempty`
+	ClientType  string // "public" or "confidential"
 	RedirectUri string
 	AppName     string
 	WebSite     string
