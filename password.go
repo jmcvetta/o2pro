@@ -60,7 +60,7 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
-	t := AuthTemplate{
+	t := AuthzTemplate{
 		User:   preq.Username,
 		Scopes: strings.Split(preq.Scope, " "),
 		Note:   preq.Note,

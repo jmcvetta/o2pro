@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type AuthTemplate struct {
+type AuthzTemplate struct {
 	User   string
 	Scopes []string
 	Note   string

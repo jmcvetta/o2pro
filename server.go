@@ -59,7 +59,7 @@ type Server struct {
 }
 
 // NewAuth issues a new authorization.
-func (s *Server) NewAuthz(t AuthTemplate) (*Authz, error) {
+func (s *Server) NewAuthz(t AuthzTemplate) (*Authz, error) {
 	a := Authz{
 		Token:      uuid.New(),
 		Uuid:       uuid.New(),
@@ -89,7 +89,7 @@ func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 // Authorize may grant an authorization to a client.  Server.Authorizer
 // decides whether to make the grant. ErrNotAuthorized is returned if
 // authorization is denied.
-func (s *Server) Authorize(t AuthTemplate, password string) (*Authz, error) {
+func (s *Server) Authorize(t AuthzTemplate, password string) (*Authz, error) {
 	a := new(Authz)
 	ok, err := s.Authorizer(t.User, password, t.Scopes)
 	if err != nil {

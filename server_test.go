@@ -27,7 +27,7 @@ func kirkAuthorizer(username, password string, scopes []string) (bool, error) {
 func doTestAuthz(s *Server, t *testing.T) {
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	tmpl := AuthTemplate{
+	tmpl := AuthzTemplate{
 		User:   username,
 		Scopes: scopes,
 	}
@@ -54,7 +54,7 @@ func doTestExpiration(s *Server, t *testing.T) {
 	s.Duration = five
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	tmpl := AuthTemplate{
+	tmpl := AuthzTemplate{
 		User:   username,
 		Scopes: scopes,
 	}
