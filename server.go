@@ -80,9 +80,11 @@ func (s *Server) HandlerFunc(hs handlerStub) http.HandlerFunc {
 	}
 }
 
+/*
 func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 
 }
+*/
 
 // Authorize may grant an authorization to a client.  Server.Authorizer
 // decides whether to make the grant. ErrNotAuthorized is returned if

@@ -10,7 +10,6 @@ package o2pro
 */
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -37,33 +36,15 @@ var (
 // PasswordGrant supports authorization via the  Resource Owner Password
 // Credentials Grant workflow.
 func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
-	l := s.Logger
 	//
 	// Authenticate
 	//
-	str := r.Header.Get("Authorization")
 	malformed := "Malformed Authorization header"
-	matches := authRegex.FindStringSubmatch(str)
-	if len(matches) != 2 {
-		l.Println("Regex doesn't match")
-		http.Error(w, malformed, http.StatusBadRequest)
-		return
-	}
-	encoded := matches[1]
-	b, err := base64.URLEncoding.DecodeString(encoded)
+	username, password, err := basicAuth(r)
 	if err != nil {
-		l.Println("Base64 decode failed")
 		http.Error(w, malformed, http.StatusBadRequest)
 		return
 	}
-	parts := strings.Split(string(b), ":")
-	if len(parts) != 2 {
-		l.Println("String split failed")
-		http.Error(w, malformed, http.StatusBadRequest)
-		return
-	}
-	username := parts[0]
-	password := parts[1]
 	//
 	// Parse authorization request
 	//
