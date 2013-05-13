@@ -72,6 +72,14 @@ func (s *Server) NewAuthz(t AuthTemplate) (*Authz, error) {
 	return &a, err
 }
 
+type handlerStub func(s *Server, w http.ResponseWriter, r *http.Request)
+
+func (s *Server) HandlerFunc(hs handlerStub) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		hs(s, w, r)
+	}
+}
+
 func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 
 }

@@ -34,77 +34,75 @@ var (
 	authRegex = regexp.MustCompile(authReStr)
 )
 
-// PasswordHandler returns a function to handle authorization requests using
-// the Resource Owner Password Credentials Grant flow.
-func (s *Server) PasswordHandler() http.HandlerFunc {
+// PasswordGrant supports authorization via the  Resource Owner Password
+// Credentials Grant workflow.
+func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 	l := s.Logger
-	return func(w http.ResponseWriter, r *http.Request) {
-		//
-		// Authenticate
-		//
-		str := r.Header.Get("Authorization")
-		malformed := "Malformed Authorization header"
-		matches := authRegex.FindStringSubmatch(str)
-		if len(matches) != 2 {
-			l.Println("Regex doesn't match")
-			http.Error(w, malformed, http.StatusBadRequest)
-			return
-		}
-		encoded := matches[1]
-		b, err := base64.URLEncoding.DecodeString(encoded)
-		if err != nil {
-			l.Println("Base64 decode failed")
-			http.Error(w, malformed, http.StatusBadRequest)
-			return
-		}
-		parts := strings.Split(string(b), ":")
-		if len(parts) != 2 {
-			l.Println("String split failed")
-			http.Error(w, malformed, http.StatusBadRequest)
-			return
-		}
-		username := parts[0]
-		password := parts[1]
-		//
-		// Parse authorization request
-		//
-		dec := json.NewDecoder(r.Body)
-		var preq PasswordRequest
-		err = dec.Decode(&preq)
-		if err != nil && err.Error() != "EOF" {
-			msg := "Missing or bad request body"
-			http.Error(w, msg, http.StatusBadRequest)
-			return
-		}
-		if username != preq.Username || preq.GrantType != "password" {
-			http.Error(w, "", http.StatusBadRequest)
-			return
-		}
-		t := AuthTemplate{
-			User:   preq.Username,
-			Scopes: strings.Split(preq.Scope, " "),
-			Note:   preq.Note,
-		}
-		a, err := s.Authorize(t, password)
-		switch {
-		case err == ErrNotAuthorized:
-			http.Error(w, malformed, http.StatusUnauthorized)
-			return
-		case err != nil:
-			log.Println(err)
-			http.Error(w, malformed, http.StatusBadRequest)
-		}
-		//
-		// Authorization granted, compose response
-		//
-		resp := TokenResponse{
-			AccessToken: a.Token,
-			TokenType:   "bearer",
-			ExpiresIn:   int(a.Expiration.Sub(time.Now()).Seconds()),
-			Scope:       a.ScopeString(),
-		}
-		enc := json.NewEncoder(w)
-		enc.Encode(&resp)
+	//
+	// Authenticate
+	//
+	str := r.Header.Get("Authorization")
+	malformed := "Malformed Authorization header"
+	matches := authRegex.FindStringSubmatch(str)
+	if len(matches) != 2 {
+		l.Println("Regex doesn't match")
+		http.Error(w, malformed, http.StatusBadRequest)
 		return
 	}
+	encoded := matches[1]
+	b, err := base64.URLEncoding.DecodeString(encoded)
+	if err != nil {
+		l.Println("Base64 decode failed")
+		http.Error(w, malformed, http.StatusBadRequest)
+		return
+	}
+	parts := strings.Split(string(b), ":")
+	if len(parts) != 2 {
+		l.Println("String split failed")
+		http.Error(w, malformed, http.StatusBadRequest)
+		return
+	}
+	username := parts[0]
+	password := parts[1]
+	//
+	// Parse authorization request
+	//
+	dec := json.NewDecoder(r.Body)
+	var preq PasswordRequest
+	err = dec.Decode(&preq)
+	if err != nil && err.Error() != "EOF" {
+		msg := "Missing or bad request body"
+		http.Error(w, msg, http.StatusBadRequest)
+		return
+	}
+	if username != preq.Username || preq.GrantType != "password" {
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+	t := AuthTemplate{
+		User:   preq.Username,
+		Scopes: strings.Split(preq.Scope, " "),
+		Note:   preq.Note,
+	}
+	a, err := s.Authorize(t, password)
+	switch {
+	case err == ErrNotAuthorized:
+		http.Error(w, malformed, http.StatusUnauthorized)
+		return
+	case err != nil:
+		log.Println(err)
+		http.Error(w, malformed, http.StatusBadRequest)
+	}
+	//
+	// Authorization granted, compose response
+	//
+	resp := TokenResponse{
+		AccessToken: a.Token,
+		TokenType:   "bearer",
+		ExpiresIn:   int(a.Expiration.Sub(time.Now()).Seconds()),
+		Scope:       a.ScopeString(),
+	}
+	enc := json.NewEncoder(w)
+	enc.Encode(&resp)
+	return
 }

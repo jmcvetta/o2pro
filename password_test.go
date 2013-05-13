@@ -18,7 +18,7 @@ func doTestPasswordRequest(s *Server, t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.PasswordHandler()
+	h := s.HandlerFunc(PasswordGrant)
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
 	//
