@@ -29,11 +29,19 @@ type Storage interface {
 	Migrate() error
 }
 
-// An Authorizer decides whether to grant an authorization request based on
-// client's credentials.
-type Authorizer func(user, password string, scopes []string) (bool, error)
+// An Authenticator authenticates a user's credentials.
+type Authenticator func(user, password string) (bool, error)
 
-func NewServer(s Storage, a Authorizer) *Server {
+// A Grantor decides whether to grant access for a given user, scope, and
+// client.  Client is optional.
+type Grantor func(user, scope string, c *Client) (bool, error)
+
+// GrantAll returns true regardless of scope and client.
+func GrantAll(user, scope string, c *Client) (bool, error) {
+	return true, nil
+}
+
+func NewServer(s Storage, a Authenticator, g Grantor) *Server {
 	dur, err := time.ParseDuration(DefaultExpireAfter)
 	if err != nil {
 		log.Panic(err)
@@ -44,7 +52,8 @@ func NewServer(s Storage, a Authorizer) *Server {
 		DefaultScopes: DefaultScopes,
 		Duration:      dur,
 		Logger:        DefaultLogger,
-		Authorizer:    a,
+		a:             a,
+		g:             g,
 	}
 }
 
@@ -55,7 +64,18 @@ type Server struct {
 	DefaultScopes []string      // Issued if no specific scope(s) requested
 	Duration      time.Duration // Lifetime for an authorization
 	Logger        *log.Logger
-	Authorizer    Authorizer
+	a             Authenticator
+	g             Grantor
+}
+
+// Grant decides whether to grant an authorization.
+func (s *Server) Grant(user, scope string, c *Client) (bool, error) {
+	return s.g(user, scope, c)
+}
+
+// Authenticate validates a user's credentials.
+func (s *Server) Authenticate(user, password string) (bool, error) {
+	return s.a(user, password)
 }
 
 // NewAuth issues a new authorization.
@@ -86,6 +106,7 @@ func (s *Server) Error(w http.ResponseWriter, error string, code int) {
 }
 */
 
+/*
 // Authorize may grant an authorization to a client.  Server.Authorizer
 // decides whether to make the grant. ErrNotAuthorized is returned if
 // authorization is denied.
@@ -100,3 +121,4 @@ func (s *Server) Authorize(t AuthzTemplate, password string) (*Authz, error) {
 	}
 	return s.NewAuthz(t)
 }
+*/

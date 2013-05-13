@@ -15,9 +15,9 @@ var (
 	testScopesDefault = []string{"shuttlecraft"}
 )
 
-// An Authorizer implementation that always authorizes owner "jtkirk", and never
-// authorizes anyone else.
-func kirkAuthorizer(username, password string, scopes []string) (bool, error) {
+// An Authenticator implementation that authenticates user "jtkirk" with
+// password "Beam me up, Scotty!".
+func kirkAuthenticator(username, password string) (bool, error) {
 	if username == "jtkirk" && password == "Beam me up, Scotty!" {
 		return true, nil
 	}

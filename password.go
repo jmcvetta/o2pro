@@ -52,6 +52,7 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 	var preq PasswordRequest
 	err = dec.Decode(&preq)
 	if err != nil && err.Error() != "EOF" {
+		log.Println(err)
 		msg := "Missing or bad request body"
 		http.Error(w, msg, http.StatusBadRequest)
 		return
@@ -60,22 +61,57 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
-	t := AuthzTemplate{
-		User:   preq.Username,
-		Scopes: strings.Split(preq.Scope, " "),
-		Note:   preq.Note,
-	}
-	a, err := s.Authorize(t, password)
-	switch {
-	case err == ErrNotAuthorized:
-		http.Error(w, malformed, http.StatusUnauthorized)
-		return
-	case err != nil:
+	//
+	// Authenticate credentials
+	//
+	ok, err := s.Authenticate(username, password)
+	if err != nil {
 		log.Println(err)
-		http.Error(w, malformed, http.StatusBadRequest)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+	if !ok {
+		http.Error(w, "Invalid username/password", http.StatusUnauthorized)
+		return
 	}
 	//
-	// Authorization granted, compose response
+	// Validate scope
+	//
+	scopes := strings.Split(preq.Scope, " ")
+	valid := sliceMap(s.Scopes)
+	for _, scope := range scopes {
+		_, ok = valid[scope]
+		if !ok {
+			http.Error(w, "Invalid scope: "+scope, http.StatusBadRequest)
+			return
+		}
+		ok, err = s.Grant(username, scope, nil)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "", http.StatusInternalServerError)
+			return
+		}
+		if !ok {
+			http.Error(w, "Not authorized for scope: "+scope, http.StatusUnauthorized)
+			return
+		}
+	}
+	//
+	// Create new authorization
+	//
+	t := AuthzTemplate{
+		User:   preq.Username,
+		Scopes: scopes,
+		Note:   preq.Note,
+	}
+	a, err := s.NewAuthz(t)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+	//
+	// Compose response
 	//
 	resp := TokenResponse{
 		AccessToken: a.Token,
