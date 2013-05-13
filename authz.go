@@ -17,11 +17,7 @@ type AuthzTemplate struct {
 // ScopesMap returns a map of the scopes in this authorization, for easy look
 // up.  Bool is always true.
 func (a *Authz) ScopesMap() map[string]bool {
-	sm := map[string]bool{}
-	for _, s := range a.Scopes {
-		sm[s] = true
-	}
-	return sm
+	return sliceMap(a.Scopes)
 }
 
 func (a *Authz) ScopeString() string {

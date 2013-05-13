@@ -41,6 +41,14 @@ func basicAuth(r *http.Request) (username, password string, err error) {
 	return
 }
 
+func sliceMap(s []string) map[string]bool {
+	sm := make(map[string]bool, len(s))
+	for _, s := range s {
+		sm[s] = true
+	}
+	return sm
+}
+
 func prettyPrint(v interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	lineNo := strconv.Itoa(line)
