@@ -21,7 +21,7 @@ var (
 	authRegex = regexp.MustCompile(authReStr)
 )
 
-func basicAuth(r *http.Request) (username, password string, err error) {
+func BasicAuth(r *http.Request) (username, password string, err error) {
 	str := r.Header.Get("Authorization")
 	matches := authRegex.FindStringSubmatch(str)
 	if len(matches) != 2 {
