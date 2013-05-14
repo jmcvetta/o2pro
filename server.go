@@ -20,8 +20,6 @@ var (
 	DefaultScopes      = []string{"all"}
 )
 
-type Scopes map[string]bool // scope_name:true
-
 // A Storage back end saves and retrieves authorizations to persistent storage.
 type Storage interface {
 	saveAuthz(a *Authz) error
