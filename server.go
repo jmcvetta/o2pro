@@ -6,6 +6,8 @@ package o2pro
 
 import (
 	"code.google.com/p/go-uuid/uuid"
+	"crypto/rand"
+	"encoding/base64"
 	"log"
 	"net/http"
 	"os"
@@ -101,15 +103,22 @@ func (s *Server) Migrate() error {
 
 // NewAuth issues a new authorization.
 func (s *Server) NewAuthz(t AuthzTemplate) (*Authz, error) {
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+	token := uuid.New() + string(b)
+	token = base64.StdEncoding.EncodeToString([]byte(token))
 	a := Authz{
-		Token:      uuid.New(),
+		Token:      token,
 		Uuid:       uuid.New(),
 		User:       t.User,
 		Scopes:     t.Scopes,
 		Expiration: time.Now().Add(s.Duration),
 		Note:       t.Note,
 	}
-	err := s.SaveAuthz(&a)
+	err = s.SaveAuthz(&a)
 	return &a, err
 }
 
