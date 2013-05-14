@@ -135,7 +135,7 @@ func TestPasswordInvalidScope(t *testing.T) {
 
 func TestPasswordAuthenticateErr(t *testing.T) {
 	a := func(user, password string) (bool, error) {
-		return false, errNotImplemented
+		return false, ErrNotImplemented
 	}
 	s := NewServer(&nullStorage{}, a, GrantAll)
 	//
@@ -166,7 +166,7 @@ func TestPasswordAuthenticateErr(t *testing.T) {
 
 func TestPasswordGrantErr(t *testing.T) {
 	g := func(user, scope string, c *Client) (bool, error) {
-		return false, errNotImplemented
+		return false, ErrNotImplemented
 	}
 	s := NewServer(&nullStorage{}, kirkAuthenticator, g)
 	s.Scopes = testScopesAll

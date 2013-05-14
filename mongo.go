@@ -18,17 +18,18 @@ func NewMongoStorage(db *mgo.Database, dur time.Duration) Storage {
 	}
 }
 
+// mongoStorage implements Storage using MongoDB.
 type mongoStorage struct {
 	db          *mgo.Database
 	name        string // Collection name
 	expireAfter time.Duration
 }
 
-func (m *mongoStorage) Initialize() error {
-	return m.Migrate()
+func (m *mongoStorage) initialize() error {
+	return m.migrate()
 }
 
-func (m *mongoStorage) Migrate() error {
+func (m *mongoStorage) migrate() error {
 	//
 	// Declare Indexes
 	//
@@ -55,7 +56,7 @@ func (m *mongoStorage) Migrate() error {
 
 }
 
-func (s *mongoStorage) Authz(token string) (*Authz, error) {
+func (s *mongoStorage) authz(token string) (*Authz, error) {
 	a := new(Authz)
 	c := s.col()
 	query := struct {
@@ -82,7 +83,7 @@ func (s *mongoStorage) Authz(token string) (*Authz, error) {
 	return a, nil
 }
 
-func (s *mongoStorage) SaveAuthz(a *Authz) error {
+func (s *mongoStorage) saveAuthz(a *Authz) error {
 	return s.col().Insert(a)
 }
 

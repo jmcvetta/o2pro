@@ -20,6 +20,8 @@ var (
 	ErrInsufficientScope = errors.New("The request requires higher privileges than provided by the access token.")
 )
 
+var ErrNotImplemented = errors.New("Not Implemented")
+
 type oauthError string
 
 // Error Codes

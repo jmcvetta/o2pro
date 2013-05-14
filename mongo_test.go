@@ -28,13 +28,13 @@ func testMongo(t *testing.T) (*Server, *mgo.Database) {
 		t.Fatal(err)
 	}
 	stor := NewMongoStorage(db, dur)
-	err = stor.Initialize()
 	if err != nil {
 		t.Fatal(err)
 	}
 	s := NewServer(stor, kirkAuthenticator, GrantAll)
 	s.Scopes = testScopesAll
 	s.DefaultScopes = testScopesDefault
+	s.Initialize()
 	return s, db
 }
 

@@ -22,11 +22,10 @@ type Scopes map[string]bool // scope_name:true
 
 // A Storage back end saves and retrieves authorizations to persistent storage.
 type Storage interface {
-	SaveAuthz(a *Authz) error
-	Authz(token string) (*Authz, error)
-	// Run() error // Called when Server is started
-	Initialize() error
-	Migrate() error
+	saveAuthz(a *Authz) error
+	authz(token string) (*Authz, error)
+	initialize() error
+	migrate() error
 }
 
 // An Authenticator authenticates a user's credentials.
@@ -76,6 +75,28 @@ func (s *Server) Grant(user, scope string, c *Client) (bool, error) {
 // Authenticate validates a user's credentials.
 func (s *Server) Authenticate(user, password string) (bool, error) {
 	return s.a(user, password)
+}
+
+// SaveAuthz saves an authorization to storage.
+func (s *Server) SaveAuthz(a *Authz) error {
+	return s.saveAuthz(a)
+}
+
+// Authz looks up an authorization based on its token.
+func (s *Server) Authz(token string) (*Authz, error) {
+	return s.authz(token)
+}
+
+// Initialize prepares a fresh database, creating necessary schema, indexes,
+// etc.  Behavior is undefined if called with an already-initialized db.
+func (s *Server) Initialize() error {
+	return s.initialize()
+}
+
+// Migrate attempts to update the database to use the latest schema, indexes,
+// etc.  Some storage implementations may return ErrNotImplemented.
+func (s *Server) Migrate() error {
+	return s.migrate()
 }
 
 // NewAuth issues a new authorization.
