@@ -5,6 +5,7 @@
 package o2pro
 
 import (
+	"bytes"
 	"code.google.com/p/go-uuid/uuid"
 	"encoding/base64"
 	"github.com/bmizerany/assert"
@@ -176,7 +177,7 @@ func TestPasswordNoData(t *testing.T) {
 	assert.Equal(t, 400, status)
 }
 
-func TestPasswordBadData(t *testing.T) {
+func TestPasswordBogusData(t *testing.T) {
 	s := testNull(t)
 	//
 	// Prepare handler
@@ -184,12 +185,12 @@ func TestPasswordBadData(t *testing.T) {
 	h := s.HandlerFunc(PasswordGrant)
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
-	//
-	// REST request
-	//
 	username := "jtkirk"
 	password := "Beam me up, Scotty!"
 	u := url.UserPassword(username, password)
+	//
+	// Valid JSON, bogus request
+	//
 	preq := PasswordRequest{
 		GrantType: "foobar", // Should be password
 		Username:  "jtkirk",
@@ -208,4 +209,28 @@ func TestPasswordBadData(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 400, status)
+}
+
+func TestPasswordBadlyFormed(t *testing.T) {
+	s := testNull(t)
+	//
+	// Prepare handler
+	//
+	h := s.HandlerFunc(PasswordGrant)
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	username := "jtkirk"
+	password := "Beam me up, Scotty!"
+	buf := bytes.NewBuffer([]byte("foobar"))
+	req, err := http.NewRequest("POST", hserv.URL, buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.SetBasicAuth(username, password)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 400, resp.StatusCode)
+
 }
