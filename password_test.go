@@ -79,7 +79,7 @@ func TestPasswordBadCreds(t *testing.T) {
 		Username:  "jtkirk",
 		Password:  password,
 	}
-	var res string
+	var res interface{}
 	var e interface{}
 	rr := restclient.RequestResponse{
 		Url:      hserv.URL,
@@ -146,4 +146,66 @@ func TestPasswordBadAuthHeader(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 400, resp.StatusCode)
+}
+
+func TestPasswordNoData(t *testing.T) {
+	s := testNull(t)
+	//
+	// Prepare handler
+	//
+	h := s.HandlerFunc(PasswordGrant)
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	//
+	// REST request
+	//
+	username := "jtkirk"
+	password := "Beam me up, Scotty!"
+	u := url.UserPassword(username, password)
+	rr := restclient.RequestResponse{
+		Url:      hserv.URL,
+		Method:   "POST",
+		Userinfo: u,
+	}
+	c := restclient.New()
+	c.UnsafeBasicAuth = true
+	status, err := c.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 400, status)
+}
+
+func TestPasswordBadData(t *testing.T) {
+	s := testNull(t)
+	//
+	// Prepare handler
+	//
+	h := s.HandlerFunc(PasswordGrant)
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	//
+	// REST request
+	//
+	username := "jtkirk"
+	password := "Beam me up, Scotty!"
+	u := url.UserPassword(username, password)
+	preq := PasswordRequest{
+		GrantType: "foobar", // Should be password
+		Username:  "jtkirk",
+		Password:  password,
+	}
+	rr := restclient.RequestResponse{
+		Url:      hserv.URL,
+		Method:   "POST",
+		Userinfo: u,
+		Data:     &preq,
+	}
+	c := restclient.New()
+	c.UnsafeBasicAuth = true
+	status, err := c.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 400, status)
 }
