@@ -57,3 +57,40 @@ func doTestPasswordRequest(s *Server, t *testing.T) {
 	assert.Equal(t, scopeStr, res.Scope)
 	assert.Equal(t, "bearer", res.TokenType)
 }
+
+func doTestPasswordBadCreds(s *Server, t *testing.T) {
+	//
+	// Prepare handler
+	//
+	h := s.HandlerFunc(PasswordGrant)
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	//
+	// REST request
+	//
+	username := "jtkirk"
+	password := "Go Klingons!"
+	u := url.UserPassword(username, password)
+	preq := PasswordRequest{
+		GrantType: "password",
+		Username:  "jtkirk",
+		Password:  password,
+	}
+	var res string
+	var e interface{}
+	rr := restclient.RequestResponse{
+		Url:      hserv.URL,
+		Method:   "POST",
+		Userinfo: u,
+		Data:     &preq,
+		Result:   &res,
+		Error:    &e,
+	}
+	c := restclient.New()
+	c.UnsafeBasicAuth = true
+	status, err := c.Do(&rr)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, 401, status)
+}

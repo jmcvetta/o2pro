@@ -93,3 +93,8 @@ func TestMgoPasswordRequest(t *testing.T) {
 	s, _ := testMongo(t)
 	doTestPasswordRequest(s, t)
 }
+
+func TestMgoPasswordBadCreds(t *testing.T) {
+	s, _ := testMongo(t)
+	doTestPasswordBadCreds(s, t)
+}
