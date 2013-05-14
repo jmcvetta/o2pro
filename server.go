@@ -36,7 +36,7 @@ type Authenticator func(user, password string) (bool, error)
 // client.  Client is optional.
 type Grantor func(user, scope string, c *Client) (bool, error)
 
-// GrantAll returns true regardless of scope and client.
+// GrantAll is a Grantor that always returns true.
 func GrantAll(user, scope string, c *Client) (bool, error) {
 	return true, nil
 }
