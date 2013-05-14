@@ -133,6 +133,37 @@ func TestPasswordInvalidScope(t *testing.T) {
 	assert.Equal(t, 400, status)
 }
 
+func TestPasswordAuthenticateErr(t *testing.T) {
+	a := func(user, password string) (bool, error) {
+		return false, errNotImplemented
+	}
+	s := NewServer(&nullStorage{}, a, GrantAll)
+	//
+	// Prepare handler
+	//
+	h := s.HandlerFunc(PasswordGrant)
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	//
+	// REST request
+	//
+	username := "jtkirk"
+	password := "Beam me up, Scotty!"
+	u := url.UserPassword(username, password)
+	rr := restclient.RequestResponse{
+		Url:      hserv.URL,
+		Method:   "POST",
+		Userinfo: u,
+	}
+	c := restclient.New()
+	c.UnsafeBasicAuth = true
+	status, err := c.Do(&rr)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, 500, status)
+}
+
 func TestPasswordGrantErr(t *testing.T) {
 	g := func(user, scope string, c *Client) (bool, error) {
 		return false, errNotImplemented
