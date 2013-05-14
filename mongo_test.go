@@ -34,7 +34,14 @@ func testMongo(t *testing.T) (*Server, *mgo.Database) {
 	s := NewServer(stor, kirkAuthenticator, GrantAll)
 	s.Scopes = testScopesAll
 	s.DefaultScopes = testScopesDefault
-	s.Initialize()
+	err = s.Initialize()
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = s.Migrate()
+	if err != nil {
+		t.Fatal(err)
+	}
 	return s, db
 }
 
