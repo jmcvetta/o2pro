@@ -39,6 +39,16 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, malformed, http.StatusBadRequest)
 		return
 	}
+	ok, err := s.Authenticate(username, password)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+	if !ok {
+		http.Error(w, "Invalid username/password", http.StatusUnauthorized)
+		return
+	}
 	//
 	// Parse authorization request
 	//
@@ -53,19 +63,6 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 	}
 	if username != preq.Username || preq.GrantType != "password" {
 		http.Error(w, "", http.StatusBadRequest)
-		return
-	}
-	//
-	// Authenticate credentials
-	//
-	ok, err := s.Authenticate(username, password)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-	if !ok {
-		http.Error(w, "Invalid username/password", http.StatusUnauthorized)
 		return
 	}
 	//
