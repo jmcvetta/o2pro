@@ -13,7 +13,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -27,11 +26,6 @@ type PasswordRequest struct {
 	Scope     string `json:"scope"`      // OPTIONAL.  The scope of the access request as described by http://tools.ietf.org/html/rfc6749#section-3.3
 	Note      string `json:"note"`       // OPTIONAL.  Not part of RFC spec - inspired by Github.
 }
-
-var (
-	authReStr = `[Bb]asic (?P<encoded>\S+)`
-	authRegex = regexp.MustCompile(authReStr)
-)
 
 // PasswordGrant supports authorization via the  Resource Owner Password
 // Credentials Grant workflow.

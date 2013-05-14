@@ -6,8 +6,10 @@ package o2pro
 
 import (
 	"code.google.com/p/go-uuid/uuid"
+	"encoding/base64"
 	"github.com/bmizerany/assert"
 	"github.com/jmcvetta/restclient"
+	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
@@ -91,7 +93,57 @@ func TestPasswordBadCreds(t *testing.T) {
 	c.UnsafeBasicAuth = true
 	status, err := c.Do(&rr)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	assert.Equal(t, 401, status)
+}
+
+func TestPasswordBadAuthHeader(t *testing.T) {
+	s := testNull(t)
+	//
+	// Prepare handler
+	//
+	h := s.HandlerFunc(PasswordGrant)
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	//
+	// Regex doesn't match
+	//
+	req, err := http.NewRequest("POST", hserv.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Add("Authorization", "foobar")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 400, resp.StatusCode)
+	//
+	// Base64 decode failed
+	//
+	req, err = http.NewRequest("POST", hserv.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Add("Authorization", "Basic foobar")
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 400, resp.StatusCode)
+	//
+	// String split failed
+	//
+	req, err = http.NewRequest("POST", hserv.URL, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	str := base64.URLEncoding.EncodeToString([]byte("foobar"))
+	req.Header.Add("Authorization", "Basic "+str)
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 400, resp.StatusCode)
 }

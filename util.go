@@ -10,9 +10,15 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
+)
+
+var (
+	authReStr = `[Bb]asic (?P<encoded>\S+)`
+	authRegex = regexp.MustCompile(authReStr)
 )
 
 func basicAuth(r *http.Request) (username, password string, err error) {
