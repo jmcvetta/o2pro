@@ -33,9 +33,6 @@ func testMongo(t *testing.T) (*Server, *mgo.Database) {
 		t.Fatal(err)
 	}
 	s := NewServer(stor, kirkAuthenticator, GrantAll)
-	if err != nil {
-		t.Fatal(err)
-	}
 	s.Scopes = testScopesAll
 	s.DefaultScopes = testScopesDefault
 	return s, db
@@ -92,9 +89,4 @@ func TestMgoExpiration(t *testing.T) {
 func TestMgoPasswordRequest(t *testing.T) {
 	s, _ := testMongo(t)
 	doTestPasswordRequest(s, t)
-}
-
-func TestMgoPasswordBadCreds(t *testing.T) {
-	s, _ := testMongo(t)
-	doTestPasswordBadCreds(s, t)
 }

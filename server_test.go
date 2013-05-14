@@ -68,3 +68,31 @@ func doTestExpiration(s *Server, t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// for testing things that do not depend on storage
+type nullStorage struct {
+}
+
+func (n *nullStorage) SaveAuthz(a *Authz) error {
+	return nil
+}
+
+func (n *nullStorage) Authz(token string) (*Authz, error) {
+	return nil, nil
+}
+
+func (n *nullStorage) Initialize() error {
+	return nil
+}
+
+func (n *nullStorage) Migrate() error {
+	return nil
+}
+
+// for testing things that do not depend on storage
+func testNull(t *testing.T) *Server {
+	s := NewServer(&nullStorage{}, kirkAuthenticator, GrantAll)
+	s.Scopes = testScopesAll
+	s.DefaultScopes = testScopesDefault
+	return s
+}

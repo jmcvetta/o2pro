@@ -58,7 +58,8 @@ func doTestPasswordRequest(s *Server, t *testing.T) {
 	assert.Equal(t, "bearer", res.TokenType)
 }
 
-func doTestPasswordBadCreds(s *Server, t *testing.T) {
+func TestPasswordBadCreds(t *testing.T) {
+	s := testNull(t)
 	//
 	// Prepare handler
 	//
