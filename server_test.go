@@ -5,6 +5,7 @@
 package o2pro
 
 import (
+	"errors"
 	"github.com/bmizerany/assert"
 	"testing"
 	"time"
@@ -72,20 +73,22 @@ func doTestExpiration(s *Server, t *testing.T) {
 type nullStorage struct {
 }
 
+var errNotImplemented = errors.New("Not Implemented")
+
 func (n *nullStorage) SaveAuthz(a *Authz) error {
-	return nil
+	return errNotImplemented
 }
 
 func (n *nullStorage) Authz(token string) (*Authz, error) {
-	return nil, nil
+	return nil, errNotImplemented
 }
 
 func (n *nullStorage) Initialize() error {
-	return nil
+	return errNotImplemented
 }
 
 func (n *nullStorage) Migrate() error {
-	return nil
+	return errNotImplemented
 }
 
 // for testing things that do not depend on storage
