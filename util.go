@@ -53,12 +53,13 @@ func BearerToken(r *http.Request) (token string, err error) {
 	//
 	// Authorization Header
 	//
-	str := r.Header.Get("Authorization")
-	if str != "" {
-		matches := bearerRegex.FindStringSubmatch(str)
+	auth := r.Header.Get("Authorization")
+	if auth != "" {
+		matches := bearerRegex.FindStringSubmatch(auth)
 		if len(matches) != 2 {
 			log.Println("Regex doesn't match")
-			err = ErrInvalidRequest
+			log.Println("\t" + auth)
+			err = ErrNoToken
 			return
 		}
 		token = matches[1]
@@ -67,7 +68,23 @@ func BearerToken(r *http.Request) (token string, err error) {
 	//
 	// Form-encoded Body Parameter
 	//
-	return "", ErrNotImplemented
+	ct := r.Header.Get("Content-Type")
+	if ct == "application/x-www-form-urlencoded" {
+		type t struct {
+			Token string `json:"access_token"`
+		}
+		s := new(t)
+		dec := json.NewDecoder(r.Body)
+		defer r.Body.Close()
+		err = dec.Decode(s)
+		token = s.Token
+		return
+	}
+	token = r.URL.Query().Get("access_token")
+	if token == "" {
+		err = ErrNoToken
+	}
+	return
 }
 
 func sliceMap(s []string) map[string]bool {
