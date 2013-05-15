@@ -90,12 +90,7 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 	//
 	// Create new authorization
 	//
-	t := AuthzTemplate{
-		User:   preq.Username,
-		Scopes: scopes,
-		Note:   preq.Note,
-	}
-	a, err := s.NewAuthz(t)
+	a, err := s.NewAuthz(preq.Username, preq.Note, scopes)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "", http.StatusInternalServerError)

@@ -49,12 +49,8 @@ func TestMgoNewAuth(t *testing.T) {
 	s, db := testMongo(t)
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	tmpl := AuthzTemplate{
-		User:   username,
-		Scopes: scopes,
-		Note:   "foo bar baz",
-	}
-	auth, err := s.NewAuthz(tmpl)
+	note := "foo bar baz"
+	auth, err := s.NewAuthz(username, note, scopes)
 	if err != nil {
 		t.Error(err)
 	}

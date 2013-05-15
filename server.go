@@ -5,9 +5,6 @@
 package o2pro
 
 import (
-	"code.google.com/p/go-uuid/uuid"
-	"crypto/rand"
-	"encoding/base64"
 	"log"
 	"net/http"
 	"os"
@@ -77,16 +74,6 @@ func (s *Server) Authenticate(user, password string) (bool, error) {
 	return s.a(user, password)
 }
 
-// SaveAuthz saves an authorization to storage.
-func (s *Server) SaveAuthz(a *Authz) error {
-	return s.saveAuthz(a)
-}
-
-// Authz looks up an authorization based on its token.
-func (s *Server) Authz(token string) (*Authz, error) {
-	return s.authz(token)
-}
-
 // Initialize prepares a fresh database, creating necessary schema, indexes,
 // etc.  Behavior is undefined if called with an already-initialized db.
 func (s *Server) Initialize() error {
@@ -99,27 +86,6 @@ func (s *Server) Migrate() error {
 	return s.migrate()
 }
 
-// NewAuth issues a new authorization.
-func (s *Server) NewAuthz(t AuthzTemplate) (*Authz, error) {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		return nil, err
-	}
-	token := uuid.New() + string(b)
-	token = base64.StdEncoding.EncodeToString([]byte(token))
-	a := Authz{
-		Token:      token,
-		Uuid:       uuid.New(),
-		User:       t.User,
-		Scopes:     t.Scopes,
-		Expiration: time.Now().Add(s.Duration),
-		Note:       t.Note,
-	}
-	err = s.SaveAuthz(&a)
-	return &a, err
-}
-
 type handlerStub func(s *Server, w http.ResponseWriter, r *http.Request)
 
 func (s *Server) HandlerFunc(hs handlerStub) http.HandlerFunc {
@@ -127,26 +93,3 @@ func (s *Server) HandlerFunc(hs handlerStub) http.HandlerFunc {
 		hs(s, w, r)
 	}
 }
-
-/*
-func (s *Server) Error(w http.ResponseWriter, error string, code int) {
-
-}
-*/
-
-/*
-// Authorize may grant an authorization to a client.  Server.Authorizer
-// decides whether to make the grant. ErrNotAuthorized is returned if
-// authorization is denied.
-func (s *Server) Authorize(t AuthzTemplate, password string) (*Authz, error) {
-	a := new(Authz)
-	ok, err := s.Authorizer(t.User, password, t.Scopes)
-	if err != nil {
-		return a, err
-	}
-	if !ok {
-		return a, ErrNotAuthorized
-	}
-	return s.NewAuthz(t)
-}
-*/
