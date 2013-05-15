@@ -17,11 +17,11 @@ import (
 	"testing"
 )
 
-func doTestPasswordRequest(s *Server, t *testing.T) {
+func doTestPasswordRequest(p *Provider, t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
+	h := p.HandlerFunc(PasswordGrant)
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
 	//
@@ -137,7 +137,7 @@ func TestPasswordAuthenticateErr(t *testing.T) {
 	a := func(user, password string) (bool, error) {
 		return false, ErrNotImplemented
 	}
-	s := NewServer(&nullStorage{}, a, GrantAll)
+	s := NewProvider(&nullStorage{}, a, GrantAll)
 	//
 	// Prepare handler
 	//
@@ -168,7 +168,7 @@ func TestPasswordGrantErr(t *testing.T) {
 	g := func(user, scope string, c *Client) (bool, error) {
 		return false, ErrNotImplemented
 	}
-	s := NewServer(&nullStorage{}, kirkAuthenticator, g)
+	s := NewProvider(&nullStorage{}, kirkAuthenticator, g)
 	s.Scopes = testScopesAll
 	s.DefaultScopes = testScopesDefault
 	//
@@ -210,7 +210,7 @@ func TestPasswordUnauthorizedScope(t *testing.T) {
 	g := func(user, scope string, c *Client) (bool, error) {
 		return false, nil
 	}
-	s := NewServer(&nullStorage{}, kirkAuthenticator, g)
+	s := NewProvider(&nullStorage{}, kirkAuthenticator, g)
 	s.Scopes = testScopesAll
 	s.DefaultScopes = testScopesDefault
 	//

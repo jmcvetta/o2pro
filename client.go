@@ -5,7 +5,25 @@
 package o2pro
 
 /*
-http://tools.ietf.org/html/rfc6749#section-2
+Client Credentials Grant
+https://tools.ietf.org/html/rfc6749#section-4.4
 */
 
 import ()
+
+const (
+	PublicClient       = "public"
+	ConfidentialClient = "confidential"
+)
+
+// A Client is an application making protected resource requests on behalf of
+// the resource owner and with its authorization.
+type Client struct {
+	Id          int64  `bson:",omitempty`
+	ClientType  string // "public" or "confidential"
+	RedirectUri string
+	AppName     string
+	WebSite     string
+	Description string
+}
+

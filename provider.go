@@ -37,12 +37,13 @@ func GrantAll(user, scope string, c *Client) (bool, error) {
 	return true, nil
 }
 
-func NewServer(s Storage, a Authenticator, g Grantor) *Server {
+// NewProvider initializes a new OAuth2 provider server.
+func NewProvider(s Storage, a Authenticator, g Grantor) *Provider {
 	dur, err := time.ParseDuration(DefaultExpireAfter)
 	if err != nil {
 		log.Panic(err)
 	}
-	return &Server{
+	return &Provider{
 		Storage:       s,
 		Scopes:        DefaultScopes,
 		DefaultScopes: DefaultScopes,
@@ -53,8 +54,8 @@ func NewServer(s Storage, a Authenticator, g Grantor) *Server {
 	}
 }
 
-// A Server is an OAuth2 authorization server.
-type Server struct {
+// A Provider is an OAuth2 authorization server server.
+type Provider struct {
 	Storage
 	Scopes        []string      // All scopes supported by this server
 	DefaultScopes []string      // Issued if no specific scope(s) requested
@@ -65,31 +66,31 @@ type Server struct {
 }
 
 // Grant decides whether to grant an authorization.
-func (s *Server) Grant(user, scope string, c *Client) (bool, error) {
-	return s.g(user, scope, c)
+func (p *Provider) Grant(user, scope string, c *Client) (bool, error) {
+	return p.g(user, scope, c)
 }
 
 // Authenticate validates a user's credentials.
-func (s *Server) Authenticate(user, password string) (bool, error) {
-	return s.a(user, password)
+func (p *Provider) Authenticate(user, password string) (bool, error) {
+	return p.a(user, password)
 }
 
 // Initialize prepares a fresh database, creating necessary schema, indexes,
 // etc.  Behavior is undefined if called with an already-initialized db.
-func (s *Server) Initialize() error {
-	return s.initialize()
+func (p *Provider) Initialize() error {
+	return p.initialize()
 }
 
 // Migrate attempts to update the database to use the latest schema, indexes,
 // etc.  Some storage implementations may return ErrNotImplemented.
-func (s *Server) Migrate() error {
-	return s.migrate()
+func (p *Provider) Migrate() error {
+	return p.migrate()
 }
 
-type handlerStub func(s *Server, w http.ResponseWriter, r *http.Request)
+type handlerStub func(p *Provider, w http.ResponseWriter, r *http.Request)
 
-func (s *Server) HandlerFunc(hs handlerStub) http.HandlerFunc {
+func (p *Provider) HandlerFunc(hs handlerStub) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		hs(s, w, r)
+		hs(p, w, r)
 	}
 }

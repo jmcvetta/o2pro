@@ -12,8 +12,22 @@ import (
 	"time"
 )
 
+// An Authz is an authorization.
+type Authz struct {
+	Id         int64 `bson:",omitempty`
+	Uuid       string
+	Token      string
+	User       string
+	ClientId   int64
+	Client     *Client
+	Issued     time.Time
+	Expiration time.Time
+	Note       string
+	Scopes     []string
+}
+
 // NewAuth issues a new authorization.
-func (s *Server) NewAuthz(user, note string, scopes []string) (*Authz, error) {
+func (p *Provider) NewAuthz(user, note string, scopes []string) (*Authz, error) {
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {
@@ -26,21 +40,21 @@ func (s *Server) NewAuthz(user, note string, scopes []string) (*Authz, error) {
 		Uuid:       uuid.New(),
 		User:       user,
 		Scopes:     scopes,
-		Expiration: time.Now().Add(s.Duration),
+		Expiration: time.Now().Add(p.Duration),
 		Note:       note,
 	}
-	err = s.SaveAuthz(&a)
+	err = p.SaveAuthz(&a)
 	return &a, err
 }
 
 // SaveAuthz saves an authorization to storage.
-func (s *Server) SaveAuthz(a *Authz) error {
-	return s.saveAuthz(a)
+func (p *Provider) SaveAuthz(a *Authz) error {
+	return p.saveAuthz(a)
 }
 
 // Authz looks up an authorization based on its token.
-func (s *Server) Authz(token string) (*Authz, error) {
-	return s.authz(token)
+func (p *Provider) Authz(token string) (*Authz, error) {
+	return p.authz(token)
 }
 
 // ScopesMap returns a map of the scopes in this authorization, for easy look

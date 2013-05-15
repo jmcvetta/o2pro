@@ -5,8 +5,8 @@
 package o2pro
 
 /*
-	Implementation of the the Resource Owner Password Credentials Grant flow.
-	http://tools.ietf.org/html/rfc6749#section-4.3
+Implementation of RESOURCE OWNER PASSWORD CREDENTIALS GRANT workflow.
+http://tools.ietf.org/html/rfc6749#section-4.3
 */
 
 import (
@@ -29,7 +29,7 @@ type PasswordRequest struct {
 
 // PasswordGrant supports authorization via the  Resource Owner Password
 // Credentials Grant workflow.
-func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
+func PasswordGrant(p *Provider, w http.ResponseWriter, r *http.Request) {
 	//
 	// Authenticate
 	//
@@ -39,7 +39,7 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, malformed, http.StatusBadRequest)
 		return
 	}
-	ok, err := s.Authenticate(username, password)
+	ok, err := p.Authenticate(username, password)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "", http.StatusInternalServerError)
@@ -69,14 +69,14 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 	// Validate scope
 	//
 	scopes := strings.Split(preq.Scope, " ")
-	valid := sliceMap(s.Scopes)
+	valid := sliceMap(p.Scopes)
 	for _, scope := range scopes {
 		_, ok = valid[scope]
 		if !ok {
 			http.Error(w, "Invalid scope: "+scope, http.StatusBadRequest)
 			return
 		}
-		ok, err = s.Grant(username, scope, nil)
+		ok, err = p.Grant(username, scope, nil)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "", http.StatusInternalServerError)
@@ -90,7 +90,7 @@ func PasswordGrant(s *Server, w http.ResponseWriter, r *http.Request) {
 	//
 	// Create new authorization
 	//
-	a, err := s.NewAuthz(preq.Username, preq.Note, scopes)
+	a, err := p.NewAuthz(preq.Username, preq.Note, scopes)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "", http.StatusInternalServerError)

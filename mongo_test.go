@@ -16,7 +16,7 @@ func col(db *mgo.Database) *mgo.Collection {
 	return db.C("authorizations")
 }
 
-func testMongo(t *testing.T) (*Server, *mgo.Database) {
+func testMongo(t *testing.T) (*Provider, *mgo.Database) {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	session, err := mgo.Dial("mongodb://127.0.0.1")
 	if err != nil {
@@ -31,18 +31,18 @@ func testMongo(t *testing.T) (*Server, *mgo.Database) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	s := NewServer(stor, kirkAuthenticator, GrantAll)
-	s.Scopes = testScopesAll
-	s.DefaultScopes = testScopesDefault
-	err = s.Initialize()
+	p := NewProvider(stor, kirkAuthenticator, GrantAll)
+	p.Scopes = testScopesAll
+	p.DefaultScopes = testScopesDefault
+	err = p.Initialize()
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = s.Migrate()
+	err = p.Migrate()
 	if err != nil {
 		t.Fatal(err)
 	}
-	return s, db
+	return p, db
 }
 
 func TestMgoNewAuth(t *testing.T) {

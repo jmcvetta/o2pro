@@ -24,14 +24,14 @@ func kirkAuthenticator(username, password string) (bool, error) {
 	return false, nil
 }
 
-func doTestAuthz(s *Server, t *testing.T) {
+func doTestAuthz(p *Provider, t *testing.T) {
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	auth, err := s.NewAuthz(username, "", scopes)
+	auth, err := p.NewAuthz(username, "", scopes)
 	if err != nil {
 		t.Error(err)
 	}
-	a, err := s.Authz(auth.Token)
+	a, err := p.Authz(auth.Token)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,18 +43,18 @@ func doTestAuthz(s *Server, t *testing.T) {
 	}
 }
 
-func doTestExpiration(s *Server, t *testing.T) {
+func doTestExpiration(p *Provider, t *testing.T) {
 	five, _ := time.ParseDuration("5ms")
 	seven, _ := time.ParseDuration("7ms")
-	s.Duration = five
+	p.Duration = five
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
-	auth, err := s.NewAuthz(username, "", scopes)
+	auth, err := p.NewAuthz(username, "", scopes)
 	if err != nil {
 		t.Fatal(err)
 	}
 	time.Sleep(seven) // Authz should be expired
-	_, err = s.Authz(auth.Token)
+	_, err = p.Authz(auth.Token)
 	if err != ErrInvalidToken {
 		t.Fatal(err)
 	}
@@ -81,11 +81,11 @@ func (n *nullStorage) migrate() error {
 }
 
 // for testing things that do not depend on storage
-func testNull(t *testing.T) *Server {
-	s := NewServer(&nullStorage{}, kirkAuthenticator, GrantAll)
-	s.Scopes = testScopesAll
-	s.DefaultScopes = testScopesDefault
-	return s
+func testNull(t *testing.T) *Provider {
+	p := NewProvider(&nullStorage{}, kirkAuthenticator, GrantAll)
+	p.Scopes = testScopesAll
+	p.DefaultScopes = testScopesDefault
+	return p
 }
 
 func TestPrettyPrint(t *testing.T) {
