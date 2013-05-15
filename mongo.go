@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// func NewMongoStorage(db *mgo.Database, dur time.Duration, a Authorizer) (*Storage, error) {
+// NewMongoStorage constructs a new mongoStorage.
 func NewMongoStorage(db *mgo.Database, dur time.Duration) Storage {
 	return &mongoStorage{
 		db:          db,
