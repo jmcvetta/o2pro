@@ -7,10 +7,9 @@ package o2pro
 /*
 Implementation of AUTHORIZATION CODE GRANT workflow
 https://tools.ietf.org/html/rfc6749#section-4.1
- */
+*/
 
-import (
-)
+import ()
 
 // A Code is an authorization code, entitling its holder to be issued an
 // authorization.

@@ -26,4 +26,3 @@ type Client struct {
 	WebSite     string
 	Description string
 }
-

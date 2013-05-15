@@ -17,13 +17,13 @@ import (
 )
 
 var (
-	authReStr = `[Bb]asic (?P<encoded>\S+)`
-	authRegex = regexp.MustCompile(authReStr)
+	basicRegex  = regexp.MustCompile(`[Bb]asic (?P<encoded>\S+)`)
+	bearerRegex = regexp.MustCompile(`[Bb]earer (?P<token>\S+)`) // Spec doesn't actually say "Bearer" should be case insensitive.
 )
 
 func BasicAuth(r *http.Request) (username, password string, err error) {
 	str := r.Header.Get("Authorization")
-	matches := authRegex.FindStringSubmatch(str)
+	matches := basicRegex.FindStringSubmatch(str)
 	if len(matches) != 2 {
 		log.Println("Regex doesn't match")
 		err = ErrInvalidRequest
@@ -45,6 +45,29 @@ func BasicAuth(r *http.Request) (username, password string, err error) {
 	username = parts[0]
 	password = parts[1]
 	return
+}
+
+// BearerToken extracts a bearer token from the authorization header, form
+// encoded body parameter, or URI query parameter of an HTTP request.
+func BearerToken(r *http.Request) (token string, err error) {
+	//
+	// Authorization Header
+	//
+	str := r.Header.Get("Authorization")
+	if str != "" {
+		matches := bearerRegex.FindStringSubmatch(str)
+		if len(matches) != 2 {
+			log.Println("Regex doesn't match")
+			err = ErrInvalidRequest
+			return
+		}
+		token = matches[1]
+		return
+	}
+	//
+	// Form-encoded Body Parameter
+	//
+	return "", ErrNotImplemented
 }
 
 func sliceMap(s []string) map[string]bool {
