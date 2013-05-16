@@ -80,16 +80,26 @@ func TestMgoNewAuth(t *testing.T) {
 }
 
 func TestMgoAuthz(t *testing.T) {
-	s, _ := testMongo(t)
-	doTestAuthz(s, t)
+	p, _ := testMongo(t)
+	doTestAuthz(p, t)
 }
 
 func TestMgoExpiration(t *testing.T) {
-	s, _ := testMongo(t)
-	doTestExpiration(s, t)
+	p, _ := testMongo(t)
+	doTestExpiration(p, t)
 }
 
 func TestMgoPasswordRequest(t *testing.T) {
-	s, _ := testMongo(t)
-	doTestPasswordRequest(s, t)
+	p, _ := testMongo(t)
+	doTestPasswordRequest(p, t)
+}
+
+func TestMgoAccessController(t *testing.T) {
+	p, _ := testMongo(t)
+	doTestAccessController(p, t)
+}
+
+func TestMgoAccessControllerNoToken(t *testing.T) {
+	p, _ := testMongo(t)
+	doTestAccessControllerNoToken(p, t)
 }

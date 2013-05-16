@@ -16,9 +16,7 @@ func fooHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func TestAccessController(t *testing.T) {
-	var p *Provider
-	p, _ = testMongo(t)
+func doTestAccessController(p *Provider, t *testing.T) {
 	c := NewAccessController(p)
 	h := c.ProtectScope(fooHandler, "enterprise")
 	hserv := httptest.NewServer(h)
@@ -39,4 +37,20 @@ func TestAccessController(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 200, status)
+}
+
+func doTestAccessControllerNoToken(p *Provider, t *testing.T) {
+	c := NewAccessController(p)
+	h := c.ProtectScope(fooHandler, "enterprise")
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	rr := restclient.RequestResponse{
+		Url:    hserv.URL,
+		Method: "GET",
+	}
+	status, err := restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 401, status)
 }
