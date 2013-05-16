@@ -108,3 +108,8 @@ func TestMgoAccessControllerBadScope(t *testing.T) {
 	p, _ := testMongo(t)
 	doTestAccessControllerBadScope(p, t)
 }
+
+func TestMgoTestAccessControllerBadHeader(t *testing.T) {
+	p, _ := testMongo(t)
+	doTestAccessControllerBadHeader(p, t)
+}
