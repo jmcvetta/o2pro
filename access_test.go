@@ -39,6 +39,29 @@ func doTestAccessController(p *Provider, t *testing.T) {
 	assert.Equal(t, 200, status)
 }
 
+func doTestAccessControllerBadScope(p *Provider, t *testing.T) {
+	c := NewAccessController(p)
+	h := c.ProtectScope(fooHandler, "foobar") // Not among the authorized scopes
+	hserv := httptest.NewServer(h)
+	defer hserv.Close()
+	username := "jtkirk"
+	scopes := []string{"enterprise", "shuttlecraft"}
+	note := "foo bar baz"
+	auth, _ := p.NewAuthz(username, note, scopes)
+	header := make(http.Header)
+	header.Add("Authorization", "Bearer "+auth.Token)
+	rr := restclient.RequestResponse{
+		Url:    hserv.URL,
+		Method: "GET",
+		Header: &header,
+	}
+	status, err := restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 401, status)
+}
+
 func doTestAccessControllerNoToken(p *Provider, t *testing.T) {
 	c := NewAccessController(p)
 	h := c.ProtectScope(fooHandler, "enterprise")

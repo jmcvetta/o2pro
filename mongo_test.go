@@ -103,3 +103,8 @@ func TestMgoAccessControllerNoToken(t *testing.T) {
 	p, _ := testMongo(t)
 	doTestAccessControllerNoToken(p, t)
 }
+
+func TestMgoAccessControllerBadScope(t *testing.T) {
+	p, _ := testMongo(t)
+	doTestAccessControllerBadScope(p, t)
+}
