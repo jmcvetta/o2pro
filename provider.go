@@ -54,7 +54,7 @@ func NewProvider(s Storage, a Authenticator, g Grantor) *Provider {
 	}
 }
 
-// A Provider is an OAuth2 authorization server server.
+// A Provider is an OAuth2 authorization server.
 type Provider struct {
 	Storage
 	Scopes        []string      // All scopes supported by this server
