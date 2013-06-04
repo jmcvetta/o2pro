@@ -21,6 +21,8 @@ var (
 	bearerRegex = regexp.MustCompile(`[Bb]earer (?P<token>\S+)`) // Spec doesn't actually say "Bearer" should be case insensitive.
 )
 
+// BasicAuth extracts username & password from an HTTP request's authorization
+// header.
 func BasicAuth(r *http.Request) (username, password string, err error) {
 	str := r.Header.Get("Authorization")
 	matches := basicRegex.FindStringSubmatch(str)
