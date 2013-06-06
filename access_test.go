@@ -20,6 +20,9 @@ func doTestRequireScope(p *Provider, t *testing.T) {
 	h := p.RequireScope(fooHandler, "enterprise")
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
+	//
+	// Valid Scope
+	//
 	username := "jtkirk"
 	scopes := []string{"enterprise", "shuttlecraft"}
 	note := "foo bar baz"
@@ -36,57 +39,47 @@ func doTestRequireScope(p *Provider, t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 200, status)
-}
-
-func doTestRequireScopeBadScope(p *Provider, t *testing.T) {
-	h := p.RequireScope(fooHandler, "foobar") // Not among the authorized scopes
-	hserv := httptest.NewServer(h)
-	defer hserv.Close()
-	username := "jtkirk"
-	scopes := []string{"enterprise", "shuttlecraft"}
-	note := "foo bar baz"
-	auth, _ := p.NewAuthz(username, note, scopes)
-	header := make(http.Header)
-	header.Add("Authorization", "Bearer "+auth.Token)
-	rr := restclient.RequestResponse{
+	//
+	// No Token
+	//
+	rr = restclient.RequestResponse{
 		Url:    hserv.URL,
 		Method: "GET",
-		Header: &header,
 	}
-	status, err := restclient.Do(&rr)
+	status, err = restclient.Do(&rr)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 401, status)
-}
-
-func doTestRequireScopeNoToken(p *Provider, t *testing.T) {
-	h := p.RequireScope(fooHandler, "enterprise")
-	hserv := httptest.NewServer(h)
-	defer hserv.Close()
-	rr := restclient.RequestResponse{
-		Url:    hserv.URL,
-		Method: "GET",
-	}
-	status, err := restclient.Do(&rr)
-	if err != nil {
-		t.Fatal(err)
-	}
-	assert.Equal(t, 401, status)
-}
-
-func doTestRequireScopeBadHeader(p *Provider, t *testing.T) {
-	h := p.RequireScope(fooHandler, "foobar") // Not among the authorized scopes
-	hserv := httptest.NewServer(h)
-	defer hserv.Close()
-	header := make(http.Header)
+	//
+	// Bad Header
+	//
+	header = make(http.Header)
 	header.Add("Authorization", "foobar")
-	rr := restclient.RequestResponse{
+	rr = restclient.RequestResponse{
 		Url:    hserv.URL,
 		Method: "GET",
 		Header: &header,
 	}
-	status, err := restclient.Do(&rr)
+	status, err = restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 401, status)
+	//
+	// Unauthorized Scope
+	//
+	h1 := p.RequireScope(fooHandler, "foobar") // Not among the authorized scopes
+	hserv1 := httptest.NewServer(h1)
+	defer hserv1.Close()
+	header = make(http.Header)
+	header.Add("Authorization", "Bearer "+auth.Token)
+	rr = restclient.RequestResponse{
+		Url:    hserv1.URL,
+		Method: "GET",
+		Header: &header,
+	}
+	status, err = restclient.Do(&rr)
 	if err != nil {
 		t.Fatal(err)
 	}

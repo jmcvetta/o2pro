@@ -99,21 +99,6 @@ func TestMgoRequireScope(t *testing.T) {
 	doTestRequireScope(p, t)
 }
 
-func TestMgoRequireScopeNoToken(t *testing.T) {
-	p, _ := testMongo(t)
-	doTestRequireScopeNoToken(p, t)
-}
-
-func TestMgoRequireScopeBadScope(t *testing.T) {
-	p, _ := testMongo(t)
-	doTestRequireScopeBadScope(p, t)
-}
-
-func TestMgoTestRequireScopeBadHeader(t *testing.T) {
-	p, _ := testMongo(t)
-	doTestRequireScopeBadHeader(p, t)
-}
-
 func TestMgoTestRequireAuthc(t *testing.T) {
 	p, _ := testMongo(t)
 	doTestRequireAuthc(p, t)
