@@ -121,4 +121,16 @@ func doTestRequireAuthc(p *Provider, t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 401, status)
+	//
+	// No Auth Token
+	//
+	rr = restclient.RequestResponse{
+		Url:    hserv.URL,
+		Method: "GET",
+	}
+	status, err = restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 401, status)
 }
