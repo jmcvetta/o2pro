@@ -43,7 +43,7 @@ func (p *Provider) RequireScope(fn http.HandlerFunc, scope string) http.HandlerF
 }
 
 // RequireAuthc wraps a HandlerFunc, restricting access to authenticated users.
-func (p *Provider) RequireAuthc(fn http.HandlerFunc, scope string) http.HandlerFunc {
+func (p *Provider) RequireAuthc(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token, err := BearerToken(r)
 		if err != nil { // No token found

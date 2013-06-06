@@ -113,3 +113,8 @@ func TestMgoTestRequireScopeBadHeader(t *testing.T) {
 	p, _ := testMongo(t)
 	doTestRequireScopeBadHeader(p, t)
 }
+
+func TestMgoTestRequireAuthc(t *testing.T) {
+	p, _ := testMongo(t)
+	doTestRequireAuthc(p, t)
+}
