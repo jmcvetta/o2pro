@@ -69,6 +69,7 @@ func (s *mongoStorage) authz(token string) (*Authz, error) {
 	if err != nil {
 		return a, err
 	}
+	// Token not found
 	if cnt < 1 {
 		return a, ErrInvalidToken
 	}
@@ -76,6 +77,7 @@ func (s *mongoStorage) authz(token string) (*Authz, error) {
 	if err != nil {
 		return a, err
 	}
+	// Expired token
 	if time.Now().After(a.Expiration) {
 		c.Remove(query)
 		return a, ErrInvalidToken

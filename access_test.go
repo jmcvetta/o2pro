@@ -16,9 +16,8 @@ func fooHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func doTestAccessController(p *Provider, t *testing.T) {
-	c := NewAccessController(p)
-	h := c.ProtectScope(fooHandler, "enterprise")
+func doTestRequireScope(p *Provider, t *testing.T) {
+	h := p.RequireScope(fooHandler, "enterprise")
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
 	username := "jtkirk"
@@ -39,9 +38,8 @@ func doTestAccessController(p *Provider, t *testing.T) {
 	assert.Equal(t, 200, status)
 }
 
-func doTestAccessControllerBadScope(p *Provider, t *testing.T) {
-	c := NewAccessController(p)
-	h := c.ProtectScope(fooHandler, "foobar") // Not among the authorized scopes
+func doTestRequireScopeBadScope(p *Provider, t *testing.T) {
+	h := p.RequireScope(fooHandler, "foobar") // Not among the authorized scopes
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
 	username := "jtkirk"
@@ -62,9 +60,8 @@ func doTestAccessControllerBadScope(p *Provider, t *testing.T) {
 	assert.Equal(t, 401, status)
 }
 
-func doTestAccessControllerNoToken(p *Provider, t *testing.T) {
-	c := NewAccessController(p)
-	h := c.ProtectScope(fooHandler, "enterprise")
+func doTestRequireScopeNoToken(p *Provider, t *testing.T) {
+	h := p.RequireScope(fooHandler, "enterprise")
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
 	rr := restclient.RequestResponse{
@@ -78,9 +75,8 @@ func doTestAccessControllerNoToken(p *Provider, t *testing.T) {
 	assert.Equal(t, 401, status)
 }
 
-func doTestAccessControllerBadHeader(p *Provider, t *testing.T) {
-	c := NewAccessController(p)
-	h := c.ProtectScope(fooHandler, "foobar") // Not among the authorized scopes
+func doTestRequireScopeBadHeader(p *Provider, t *testing.T) {
+	h := p.RequireScope(fooHandler, "foobar") // Not among the authorized scopes
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
 	header := make(http.Header)

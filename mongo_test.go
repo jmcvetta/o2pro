@@ -94,22 +94,22 @@ func TestMgoPasswordRequest(t *testing.T) {
 	doTestPasswordRequest(p, t)
 }
 
-func TestMgoAccessController(t *testing.T) {
+func TestMgoRequireScope(t *testing.T) {
 	p, _ := testMongo(t)
-	doTestAccessController(p, t)
+	doTestRequireScope(p, t)
 }
 
-func TestMgoAccessControllerNoToken(t *testing.T) {
+func TestMgoRequireScopeNoToken(t *testing.T) {
 	p, _ := testMongo(t)
-	doTestAccessControllerNoToken(p, t)
+	doTestRequireScopeNoToken(p, t)
 }
 
-func TestMgoAccessControllerBadScope(t *testing.T) {
+func TestMgoRequireScopeBadScope(t *testing.T) {
 	p, _ := testMongo(t)
-	doTestAccessControllerBadScope(p, t)
+	doTestRequireScopeBadScope(p, t)
 }
 
-func TestMgoTestAccessControllerBadHeader(t *testing.T) {
+func TestMgoTestRequireScopeBadHeader(t *testing.T) {
 	p, _ := testMongo(t)
-	doTestAccessControllerBadHeader(p, t)
+	doTestRequireScopeBadHeader(p, t)
 }

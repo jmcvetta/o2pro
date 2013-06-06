@@ -15,22 +15,17 @@ http://tools.ietf.org/html/rfc6749#section-7
 
 import ()
 
-// An AccessController restricts access to resources using OAuth tokens.
-type AccessController struct {
-	Storage
-}
-
-// ProtectScope wraps a HandlerFunc, restricting access to authenticated users
+// RequireScope wraps a HandlerFunc, restricting access to authenticated users
 // with the specified scope.
-func (c *AccessController) ProtectScope(fn http.HandlerFunc, scope string) http.HandlerFunc {
+func (p *Provider) RequireScope(fn http.HandlerFunc, scope string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token, err := BearerToken(r)
-		if err != nil {
+		if err != nil { // No token found
 			log.Println(err)
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
-		a, err := c.authz(token)
+		a, err := p.authz(token)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "", http.StatusUnauthorized)
@@ -47,11 +42,22 @@ func (c *AccessController) ProtectScope(fn http.HandlerFunc, scope string) http.
 	}
 }
 
-// running inside the same program.
-func NewAccessController(s Storage) *AccessController {
-	return &AccessController{s}
-}
-
-func (c *AccessController) ReqAuthz(r *http.Request) (*Authz, error) {
-	return nil, ErrNotImplemented
+// RequireAuthc wraps a HandlerFunc, restricting access to authenticated users.
+func (p *Provider) RequireAuthc(fn http.HandlerFunc, scope string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token, err := BearerToken(r)
+		if err != nil { // No token found
+			log.Println(err)
+			http.Error(w, "", http.StatusUnauthorized)
+			return
+		}
+		_, err = p.authz(token)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "", http.StatusUnauthorized)
+			return
+		}
+		fn(w, r)
+		return
+	}
 }
