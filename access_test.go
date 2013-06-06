@@ -97,6 +97,9 @@ func doTestRequireAuthc(p *Provider, t *testing.T) {
 	h := p.RequireAuthc(fooHandler)
 	hserv := httptest.NewServer(h)
 	defer hserv.Close()
+	//
+	// Valid Authentication
+	//
 	auth, _ := p.NewAuthz("jtkirk", "", nil)
 	header := make(http.Header)
 	header.Add("Authorization", "Bearer "+auth.Token)
@@ -110,4 +113,19 @@ func doTestRequireAuthc(p *Provider, t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 200, status)
+	//
+	// Invalid Auth Token
+	//
+	header = make(http.Header)
+	header.Add("Authorization", "Bearer foorbar") // "foobar" is not a valid token
+	rr = restclient.RequestResponse{
+		Url:    hserv.URL,
+		Method: "GET",
+		Header: &header,
+	}
+	status, err = restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, 401, status)
 }
