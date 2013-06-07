@@ -29,7 +29,7 @@ type PasswordRequest struct {
 
 // PasswordGrant supports authorization via the  Resource Owner Password
 // Credentials Grant workflow.
-func PasswordGrant(p *Provider, w http.ResponseWriter, r *http.Request) {
+func passwordGrant(p *Provider, w http.ResponseWriter, r *http.Request) {
 	//
 	// Authenticate
 	//

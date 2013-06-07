@@ -89,8 +89,12 @@ func (p *Provider) Migrate() error {
 
 type handlerStub func(p *Provider, w http.ResponseWriter, r *http.Request)
 
-func (p *Provider) HandlerFunc(hs handlerStub) http.HandlerFunc {
+func (p *Provider) handlerFunc(hs handlerStub) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		hs(p, w, r)
 	}
+}
+
+func (p *Provider) PasswordGrantHandler() http.HandlerFunc {
+	return p.handlerFunc(passwordGrant)
 }

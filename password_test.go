@@ -21,8 +21,7 @@ func doTestPasswordRequest(p *Provider, t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := p.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(p.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -66,8 +65,7 @@ func TestPasswordStorageErr(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -103,8 +101,7 @@ func TestPasswordInvalidScope(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -141,8 +138,7 @@ func TestPasswordAuthenticateErr(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -174,8 +170,7 @@ func TestPasswordGrantErr(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -216,8 +211,7 @@ func TestPasswordUnauthorizedScope(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -253,8 +247,7 @@ func TestPasswordBadCreds(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -291,8 +284,7 @@ func TestPasswordBadAuthHeader(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// Regex doesn't match
@@ -341,8 +333,7 @@ func TestPasswordNoData(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	//
 	// REST request
@@ -369,8 +360,7 @@ func TestPasswordBogusData(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	username := "jtkirk"
 	password := "Beam me up, Scotty!"
@@ -403,8 +393,7 @@ func TestPasswordBadlyFormed(t *testing.T) {
 	//
 	// Prepare handler
 	//
-	h := s.HandlerFunc(PasswordGrant)
-	hserv := httptest.NewServer(h)
+	hserv := httptest.NewServer(s.PasswordGrantHandler())
 	defer hserv.Close()
 	username := "jtkirk"
 	password := "Beam me up, Scotty!"
