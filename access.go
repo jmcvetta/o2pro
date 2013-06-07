@@ -6,14 +6,12 @@ package o2pro
 
 import "log"
 
-import "net/http"
-
 /*
 ACCESSING PROTECTED RESOURCES
 http://tools.ietf.org/html/rfc6749#section-7
 */
 
-import ()
+import "net/http"
 
 // RequireScope wraps a HandlerFunc, restricting access to authenticated users
 // with the specified scope.
