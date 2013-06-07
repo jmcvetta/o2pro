@@ -51,7 +51,7 @@ func basicAuth(r *http.Request) (username, password string, err error) {
 
 // BearerToken extracts a bearer token from the authorization header, form
 // encoded body parameter, or URI query parameter of an HTTP request.
-func BearerToken(r *http.Request) (token string, err error) {
+func bearerToken(r *http.Request) (token string, err error) {
 	//
 	// Authorization Header
 	//

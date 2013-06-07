@@ -17,7 +17,7 @@ import "net/http"
 // with the specified scope.
 func (p *Provider) RequireScope(fn http.HandlerFunc, scope string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		token, err := BearerToken(r)
+		token, err := bearerToken(r)
 		if err != nil { // No token found
 			log.Println(err)
 			http.Error(w, "", http.StatusUnauthorized)
@@ -43,7 +43,7 @@ func (p *Provider) RequireScope(fn http.HandlerFunc, scope string) http.HandlerF
 // RequireAuthc wraps a HandlerFunc, restricting access to authenticated users.
 func (p *Provider) RequireAuthc(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		token, err := BearerToken(r)
+		token, err := bearerToken(r)
 		if err != nil { // No token found
 			log.Println(err)
 			http.Error(w, "", http.StatusUnauthorized)
