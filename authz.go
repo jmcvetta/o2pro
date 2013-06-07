@@ -43,14 +43,16 @@ func (p *Provider) NewAuthz(user, note string, scopes []string) (*Authz, error) 
 		Expiration: time.Now().Add(p.Duration),
 		Note:       note,
 	}
-	err = p.SaveAuthz(&a)
+	err = p.saveAuthz(&a)
 	return &a, err
 }
 
+/*
 // SaveAuthz saves an authorization to storage.
 func (p *Provider) SaveAuthz(a *Authz) error {
 	return p.saveAuthz(a)
 }
+*/
 
 // Authz looks up an authorization based on its token.
 func (p *Provider) Authz(token string) (*Authz, error) {
