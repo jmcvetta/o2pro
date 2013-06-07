@@ -34,7 +34,7 @@ func passwordGrant(p *Provider, w http.ResponseWriter, r *http.Request) {
 	// Authenticate
 	//
 	malformed := "Malformed Authorization header"
-	username, password, err := BasicAuth(r)
+	username, password, err := basicAuth(r)
 	if err != nil {
 		http.Error(w, malformed, http.StatusBadRequest)
 		return

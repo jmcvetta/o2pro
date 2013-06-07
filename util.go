@@ -23,7 +23,7 @@ var (
 
 // BasicAuth extracts username & password from an HTTP request's authorization
 // header.
-func BasicAuth(r *http.Request) (username, password string, err error) {
+func basicAuth(r *http.Request) (username, password string, err error) {
 	str := r.Header.Get("Authorization")
 	matches := basicRegex.FindStringSubmatch(str)
 	if len(matches) != 2 {
