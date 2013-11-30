@@ -1,5 +1,5 @@
-O2pro - OAuth2 Provider for Golang
-==================================
+O2pro - OAuth2 Provider for Go
+==============================
 
 Package `o2pro` is an [OAuth2](http://tools.ietf.org/html/rfc6749) provider for
 [Go](http://golang.org).
