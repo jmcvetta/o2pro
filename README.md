@@ -17,7 +17,7 @@ specification is currently under development:
 See GoDoc for [API documentation](http://godoc.org/github.com/jmcvetta/o2pro).
 
 
-## Status
+# Status
 
 Under development - not yet ready for use.
 
