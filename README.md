@@ -36,10 +36,10 @@ also add corresponding new tests.
 
 # Sponsorship
 
-O2pro was originally written for a now defunct startup project, and currently
-is not being actively developed.  [The author](mailto:jason.mcvetta@gmail.com)
-is seeking a company or companies interested in providing financial backing to
-enable its continued development. 
+O2pro was originally written for a now defunct startup project.  It is not
+currently under active development.  [The
+author](mailto:jason.mcvetta@gmail.com) is seeking a company or companies
+interested in providing financial backing to enable its continued development. 
 
 
 # License
