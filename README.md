@@ -3,8 +3,12 @@ O2pro - OAuth2 Provider for Go
 
 # Deprecated
 
-`o2pro` was never completed, and is now deprecated.  You may wish to check out
+`o2pro` is incomplete and deprecated.  You may wish to check out
 [`fosite`](https://github.com/ory-am/fosite) instead.
+
+
+-----
+
 
 Package `o2pro` is an [OAuth2](http://tools.ietf.org/html/rfc6749) provider for
 [Go](http://golang.org).
